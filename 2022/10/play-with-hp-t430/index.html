@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="rBm2uFCV50">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.plusls.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="距离上次写博客居然已经将近两年了，时间过得真快。最近一直在忙，国庆终于有空折腾一下自己的玩具，刚好捡的垃圾 HP T430 Thin Client 也到货了，趁着有时间折腾一下它，并做个记录。先放个折腾的效果图（看起来很是简陋）：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="折腾 HP T430 Thin Client">
+<meta property="og:url" content="https://blog.plusls.com/2022/10/play-with-hp-t430/">
+<meta property="og:site_name" content="plusls&#39; blog">
+<meta property="og:description" content="距离上次写博客居然已经将近两年了，时间过得真快。最近一直在忙，国庆终于有空折腾一下自己的玩具，刚好捡的垃圾 HP T430 Thin Client 也到货了，趁着有时间折腾一下它，并做个记录。先放个折腾的效果图（看起来很是简陋）：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.plusls.com/2022/10/play-with-hp-t430/img/final.jpg">
+<meta property="og:image" content="https://blog.plusls.com/2022/10/play-with-hp-t430/img/j1900.jpg">
+<meta property="og:image" content="https://blog.plusls.com/2022/10/play-with-hp-t430/img/openwrt-web.png">
+<meta property="og:image" content="https://blog.plusls.com/2022/10/play-with-hp-t430/img/main-router.png">
+<meta property="article:published_time" content="2022-10-10T05:13:23.000Z">
+<meta property="article:modified_time" content="2022-10-10T11:13:23.000Z">
+<meta property="article:author" content="plusls">
+<meta property="article:tag" content="openwrt">
+<meta property="article:tag" content="proxy">
+<meta property="article:tag" content="pve">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="t430">
+<meta property="article:tag" content="sing-box">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.plusls.com/2022/10/play-with-hp-t430/img/final.jpg">
+
+
+<link rel="canonical" href="https://blog.plusls.com/2022/10/play-with-hp-t430/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.plusls.com/2022/10/play-with-hp-t430/","path":"2022/10/play-with-hp-t430/","title":"折腾 HP T430 Thin Client"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>折腾 HP T430 Thin Client | plusls' blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96606331-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-96606331-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="plusls' blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">plusls' blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一条咸鱼的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-friends"><a href="/friends/" rel="section"><i class="fa fa-address-book fa-fw"></i>friends</a></li><li class="menu-item menu-item-todo-list"><a href="/todo-list/" rel="section"><i class="fa fa-calendar fa-fw"></i>todo-list</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">基本配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PVE"><span class="nav-number">2.</span> <span class="nav-text">PVE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%A2%E6%BA%90"><span class="nav-number">2.1.</span> <span class="nav-text">换源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9-emmc"><span class="nav-number">2.2.</span> <span class="nav-text">兼容 emmc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LXQt"><span class="nav-number">2.3.</span> <span class="nav-text">LXQt</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Openwrt"><span class="nav-number">3.</span> <span class="nav-text">Openwrt</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%BB%E8%B7%AF%E7%94%B1"><span class="nav-number">3.2.</span> <span class="nav-text">配置主路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-sing-box-tun-%E6%A8%A1%E5%BC%8F%E7%9A%84%E8%BD%AF%E8%B7%AF%E7%94%B1%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.</span> <span class="nav-text">基于 sing-box tun 模式的软路由配置</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="plusls"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">plusls</p>
+  <div class="site-description" itemprop="description">咸鱼</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/plusls" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;plusls" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:plusls@qq.com" title="E-Mail → mailto:plusls@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/plusls" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.plusls.com/2022/10/play-with-hp-t430/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="plusls">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="plusls' blog">
+      <meta itemprop="description" content="咸鱼">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="折腾 HP T430 Thin Client | plusls' blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          折腾 HP T430 Thin Client
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-10-10 13:13:23 / 修改时间：19:13:23" itemprop="dateCreated datePublished" datetime="2022-10-10T13:13:23+08:00">2022-10-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/2022/" itemprop="url" rel="index"><span itemprop="name">2022</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/2022/10/" itemprop="url" rel="index"><span itemprop="name">10</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/2022/10/play-with-hp-t430/" class="post-meta-item leancloud_visitors" data-flag-title="折腾 HP T430 Thin Client" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>10k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>距离上次写博客居然已经将近两年了，时间过得真快。最近一直在忙，国庆终于有空折腾一下自己的玩具，刚好捡的垃圾 HP T430 Thin Client 也到货了，趁着有时间折腾一下它，并做个记录。先放个折腾的效果图（看起来很是简陋）：</p>
+<p><img data-src="/2022/10/play-with-hp-t430/img/final.jpg" alt="final"></p>
+<span id="more"></span>
+
+<h2 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h2><p>这个 HP T430 的配置为 Intel Celeron Processor N4000 （1.1 GHz up to 2.6 GHz）， 2G RAM + 16 G EMMC，千兆网卡，170 入手的（充电器 15，电源 25，快递 20），到手后决定先刷个 BIOS（原版的 BIOS 还是 2018 年的）。</p>
+<p>BIOS 下载地址： <a target="_blank" rel="noopener" href="https://support.hp.com/us-en/drivers/selfservice/hp-t430-thin-client/21316595">https://support.hp.com/us-en/drivers/selfservice/hp-t430-thin-client/21316595</a></p>
+<p>不知道为啥，选 win 10 的 BIOS 版本比 Linux 要低，这里下载的是 N41 的 BIOS，发布日期为 2022.6.27（听说能刷 N44 的，但是手头没编程器还是别作死了），下载后解压出目录 <code>SWSetup\SPI40825</code>，其中 <code>BIOS Flash.htm</code> 描述了几种刷 BIOS 的方案，其中尝试了 <code>Update from Computer Setup</code> 看起来它是将 BIOS 更新的 efi 应用写入了 U 盘的 HP 目录，然后由 BIOS 去主动调用来进行更新，不知道是不是因为我手头的板子 BIOS 版本太低，怎么试都不成功，最后放弃思考直接把 <code>Win\N41_0110.exe</code> 拷到装有 PE 的 U 盘里，在 PE 下进行更新。</p>
+<p>剩下的步骤也就是开启 VT-d，设置来电自启，因为打算做软路由（万物皆可软路由），同时也因为把开关焊烂了（手残是这样的）。</p>
+<h2 id="PVE"><a href="#PVE" class="headerlink" title="PVE"></a>PVE</h2><p>之前一直看群友搞了各种 j1900，锐角云，并且在上面折腾了一堆玩具，趁着这个机会也来折腾一下，当作少有的娱乐活动（然而这货只有 2G 内存 说实话有点蔡）。</p>
+<p><img data-src="/2022/10/play-with-hp-t430/img/j1900.jpg" alt="j1900"></p>
+<h3 id="换源"><a href="#换源" class="headerlink" title="换源"></a>换源</h3><p>没啥讲究，就是 PVE 有个企业源，不加订阅没法用，可以使用非订阅的源</p>
+<p>&#x2F;etc&#x2F;apt&#x2F;sources.list:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">deb https://mirrors.ustc.edu.cn/debian bullseye main contrib non-free</span><br><span class="line"></span><br><span class="line">deb https://mirrors.ustc.edu.cn/debian bullseye-updates main contrib non-free</span><br><span class="line"></span><br><span class="line"># security updates</span><br><span class="line">deb https://mirrors.ustc.edu.cn/debian-security bullseye-security main contrib non-free</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;pve-enterprise.list:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#deb https://enterprise.proxmox.com/debian/pve bullseye pve-enterprise</span><br><span class="line">deb https://mirrors.ustc.edu.cn/proxmox/debian/pve bullseye pve-no-subscription</span><br></pre></td></tr></table></figure>
+
+<h3 id="兼容-emmc"><a href="#兼容-emmc" class="headerlink" title="兼容 emmc"></a>兼容 emmc</h3><p>由于 PVE 本身的安装脚本并不支持安装到 EMMC 上，安装时会提示 <strong>Unable to get device for partition 1 on device &#x2F;dev&#x2F;mmcblk1</strong>，因此需要使用 Debug mode 进入 PVE 的安装盘，在进入安装 GUI 前修改 <code>/usr/bin/proxinstall</code> 来添加对 mmcblk 的支持</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#125; elsif (<span class="variable">$dev</span> =~ m|^/dev/[^/]+/hd[a-z]$|) &#123;</span><br><span class="line">    <span class="built_in">return</span> <span class="string">&quot;<span class="variable">$&#123;dev&#125;</span><span class="variable">$partnum</span>&quot;</span>;</span><br><span class="line">&#125; elsif (<span class="variable">$dev</span> =~ m|^/dev/nvme\d+n\d+$|) &#123;</span><br><span class="line">    <span class="built_in">return</span> <span class="string">&quot;<span class="variable">$&#123;dev&#125;</span>p<span class="variable">$partnum</span>&quot;</span>;</span><br><span class="line">&#125; elsif (<span class="variable">$dev</span> =~ m|^/dev/mmcblk\d+$|) &#123;</span><br><span class="line">    <span class="built_in">return</span> <span class="string">&quot;<span class="variable">$&#123;dev&#125;</span>p<span class="variable">$partnum</span>&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    die <span class="string">&quot;unable to get device for partition <span class="variable">$partnum</span> on device <span class="variable">$dev</span>\n&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考资料：<a target="_blank" rel="noopener" href="https://lookas2001.com/%E8%A7%A3%E5%86%B3-proxmox-ve-%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85%E5%88%B0-emmc-%E4%B8%8A%E7%9A%84%E9%97%AE%E9%A2%98/">解决 Proxmox VE 无法安装到 eMMC 上的问题</a></p>
+<h3 id="LXQt"><a href="#LXQt" class="headerlink" title="LXQt"></a>LXQt</h3><p>安装后想着，闲着有点浪费，装个 DE 试试，然而折腾了一圈，发现 KDE 和 xfce4 都跑不动，最后装了个 LXQt（然而只是个玩具，Firefox 都打不开）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install lxqt lightdm</span><br></pre></td></tr></table></figure>
+
+<p>然而这个过程中还吃了一口屎，LXQt 使用 ConnMan 来管理网络连接，和 PVE 打架了，直接直接导致开机缓慢和无法上网，解决方案也很简单，卸掉就好了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt purge connman</span><br></pre></td></tr></table></figure>
+
+<h2 id="Openwrt"><a href="#Openwrt" class="headerlink" title="Openwrt"></a>Openwrt</h2><p>终于来到正头戏了，也是本次折腾的主要目的，安装一个 openwrt 并将其作为旁路由和透明代理</p>
+<p>整个内网的网络为 192.168.2.0&#x2F;24，机器如下</p>
+<ul>
+<li>192.168.2.1： 主路由</li>
+<li>192.168.2.2： PVE</li>
+<li>192.168.2.3： 待配置的 openwrt</li>
+</ul>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>openwrt 本身也是基于 Linux 的操作系统，PVE 则是基于 Debian，那最节省开销的方式显然是将 openwrt 安装为 PVE 的 LXC 容器，从而节省下虚拟化的开销</p>
+<p>本来想直接在 LXC 中直接拉取 openwrt 的镜像，但是考虑到方便管理，还是从官网拉取了 amd64 的 rootfs 并自己创建了 CT 模板</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://downloads.openwrt.org/releases/22.03.0/targets/x86/64/openwrt-22.03.0-x86-64-rootfs.tar.gz">https://downloads.openwrt.org/releases/22.03.0/targets/x86/64/openwrt-22.03.0-x86-64-rootfs.tar.gz</a></p>
+<p>为了方便安装（某种强迫症），我并不太希望在命令行中创建 pve 容器，因此希望直接在 web 创建，但是直接创建会提示报错 <code>unable to detect OS distribution</code>，搜索了半天并没有找到在 web 设置 OS type 为 <code>unmanaged</code> 的方法，因此只能手动修改 <code>/usr/share/perl5/PVE/LXC/Setup.pm</code>，让其将 openwrt 识别为 <code>unmanaged</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">        <span class="built_in">return</span> <span class="string">&quot;alpine&quot;</span>;</span><br><span class="line">    &#125; elsif (-f  <span class="string">&quot;<span class="variable">$rootdir</span>/etc/gentoo-release&quot;</span>) &#123;</span><br><span class="line">        <span class="built_in">return</span> <span class="string">&quot;gentoo&quot;</span>;</span><br><span class="line">    &#125; elsif (-d  <span class="string">&quot;<span class="variable">$rootdir</span>/nix/store&quot;</span>) &#123;</span><br><span class="line">        <span class="built_in">return</span> <span class="string">&quot;nixos&quot;</span>;</span><br><span class="line">    &#125; elsif (-f <span class="string">&quot;<span class="variable">$rootdir</span>/etc/openwrt_release&quot;</span>) &#123;</span><br><span class="line">        <span class="built_in">return</span> <span class="string">&quot;unmanaged&quot;</span>; <span class="comment"># openwrt</span></span><br><span class="line">    &#125; elsif (-f <span class="string">&quot;<span class="variable">$rootdir</span>/etc/os-release&quot;</span>) &#123;</span><br><span class="line">        die <span class="string">&quot;unable to detect OS distribution\n&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        warn <span class="string">&quot;/etc/os-release file not found and autodetection failed, falling back to &#x27;unmanaged&#x27;\n&quot;</span>;</span><br><span class="line">        <span class="built_in">return</span> <span class="string">&quot;unmanaged&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>额外的安装配置：</p>
+<ul>
+<li>特权容器（不配置会导致 openwrt 的 dnsmasq 启动异常，貌似和 ujail 相关，参见 <a target="_blank" rel="noopener" href="https://forum.openwrt.org/t/openwrt-22-03-0-rc1-first-release-candidate/126045/196">openwrt-22-03-0-rc1-first-release-candidate</a>）</li>
+<li>swap 0</li>
+<li>ram 512</li>
+<li>磁盘大小 1G</li>
+<li>4 core</li>
+<li>关闭防火墙（我也不知道有没有必要，反正顺手点了避免吃屎）</li>
+</ul>
+<p>此外还有一些别的配置：</p>
+<ul>
+<li>开机自启动</li>
+<li>功能中除了无特权其它全部开启（其实主要是创建设备节点？不开不知道有没有问题，反正我没测）</li>
+</ul>
+<p>由于配置的透明代理期望使用 TUN 来实现，因此需要将主机的 &#x2F;dev&#x2F;tun 挂载进容器，参考自 <a target="_blank" rel="noopener" href="https://pve.proxmox.com/wiki/OpenVPN_in_LXC">OpenVPN_in_LXC</a></p>
+<p>修改 <code>/etc/pve/lxc/100.conf</code> （其中 100 为容器 id），并添加如下语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lxc.cgroup2.devices.allow: c 10:200 rwm</span><br><span class="line">lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file</span><br></pre></td></tr></table></figure>
+
+<p>随后只需要启动 openwrt，并在 PVE 控制台中配置其 ip 和网关（参考自 <a target="_blank" rel="noopener" href="https://openwrt.org/docs/guide-user/network/openwrt_as_routerdevice">openwrt_as_routerdevice</a>）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">uci <span class="built_in">set</span> network.lan.ipaddr=<span class="string">&quot;192.168.2.3&quot;</span></span><br><span class="line">uci <span class="built_in">set</span> network.lan.gateway=<span class="string">&quot;192.168.2.1&quot;</span></span><br><span class="line">uci <span class="built_in">set</span> network.lan.dns=<span class="string">&#x27;114.114.114.114&#x27;</span></span><br><span class="line">uci commit network</span><br><span class="line">/etc/init.d/network restart</span><br></pre></td></tr></table></figure>
+
+<p>配完网后可以安装一些常用的包来方便管理：</p>
+<ul>
+<li>tmux</li>
+<li>luci-i18n-base-zh-cn</li>
+<li>ip-full # 完整的 ip，支持管理 tuntap 设备等</li>
+</ul>
+<p>web 界面：</p>
+<p><img data-src="/2022/10/play-with-hp-t430/img/openwrt-web.png" alt="openwrt-web"></p>
+<p>此外还需要在 web 中进行如下设置：</p>
+<p>在 <code>接口-&gt;LAN-&gt; DHCP 服务器</code> 中设置 <code>忽略此接口</code>，从而避免网络中存在两个 DHCP server。</p>
+<p>在 <code>防火墙</code> 中将 <code>Forward</code> 设置为 <code>accpet</code>，不然 sing-box 无法处理其它机器路由来的流量，并会在内核日志中提示 <code>netlink: &#39;sing-box&#39;: attribute type 22 has an invalid length.</code>（参考资料：<a target="_blank" rel="noopener" href="https://github.com/SagerNet/sing-box/issues/100">issue 100</a>）</p>
+<h3 id="配置主路由"><a href="#配置主路由" class="headerlink" title="配置主路由"></a>配置主路由</h3><p>其实主路由的配置很简单，只需要在 DHCP 中设置通告的网关地址和 dns 地址即可（3 表示网关，6 表示 DNS 服务器，参考自 <a target="_blank" rel="noopener" href="https://www.iana.org/assignments/bootp-dhcp-parameters/bootp-dhcp-parameters.xhtml">bootp-dhcp-parameters</a>）</p>
+<p><img data-src="/2022/10/play-with-hp-t430/img/main-router.png" alt="main-router"></p>
+<h3 id="基于-sing-box-tun-模式的软路由配置"><a href="#基于-sing-box-tun-模式的软路由配置" class="headerlink" title="基于 sing-box tun 模式的软路由配置"></a>基于 sing-box tun 模式的软路由配置</h3><p>之前手机上一直使用 SagerNet 作为科学上网工具，其魔改了 v2ray-core 并添加了许多的协议支持，为此之前我也 fork 了一份 <a target="_blank" rel="noopener" href="https://github.com/plusls/Qv2ray/pulls">Qv2ray</a> 对其进行了简单的适配。后来发现 Project S 项目新出了一个 sing-box，貌似可以作为 v2ray 的替代品（clash 是什么，不熟不熟），因此决定采用其来配置透明代理</p>
+<p>我本身有个 vless+ws+nginx tls+cf 的服务端配置，只需要替换 v2ray 的 vless 为 trojan（因为看文档描述 vless 貌似将会废弃）即可：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;inbounds&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;trojan&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;listen&quot;</span><span class="punctuation">:</span> <span class="string">&quot;127.0.0.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;listen_port&quot;</span><span class="punctuation">:</span> <span class="number">10000</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;users&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;your-name&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;your-password&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;transport&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ws&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/your-path&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>PS：下载时我还疑惑了一下 amd64 和 amd64v3 是个啥区别，差了一下发现是 golang 针对新的 x86 cpu 做了一些特定优化，只有在新的 cpu 上才能使用，亲测 t430 只能使用 amd64。</p>
+<p>openwrt 侧的透明代理配置如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;log&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;disabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;level&quot;</span><span class="punctuation">:</span> <span class="string">&quot;panic&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;timestamp&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;dns&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;servers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cloudflare&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;address&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tls://1.1.1.1&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;local&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;address&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://223.5.5.5/dns-query&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;detour&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;rules&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;domain_suffix&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;qiangdong.xyz&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="string">&quot;cookies97.com&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;domain_keyword&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;plusls&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;geosite&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cn&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;local&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;strategy&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ipv4_only&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;inbounds&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tun&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;proxy-auto-in&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;inet4_address&quot;</span><span class="punctuation">:</span> <span class="string">&quot;172.114.0.1/31&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;auto_route&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;sniff&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;socks&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct-in&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;listen&quot;</span><span class="punctuation">:</span> <span class="string">&quot;::&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;listen_port&quot;</span><span class="punctuation">:</span> <span class="number">1088</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tcp_fast_open&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;sniff&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;users&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;socks&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;proxy-in&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;listen&quot;</span><span class="punctuation">:</span> <span class="string">&quot;::&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;listen_port&quot;</span><span class="punctuation">:</span> <span class="number">1089</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tcp_fast_open&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;sniff&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;users&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;outbounds&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;trojan&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;jp-out&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;server_name&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;server_port&quot;</span><span class="punctuation">:</span> <span class="number">443</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;plusls&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;network&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tcp&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tls&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;server_name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;server_name&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;utls&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;fingerprint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;chrome&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;transport&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ws&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/your-path-name&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;trojan&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;us-out&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;server_name&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;server_port&quot;</span><span class="punctuation">:</span> <span class="number">443</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;plusls&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;network&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tcp&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tls&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;server_name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;server_name&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;utls&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;fingerprint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;chrome&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;transport&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ws&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/your-path-name&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shadowsocks&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;hgc-out&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;server_name&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;server_port&quot;</span><span class="punctuation">:</span> <span class="number">46887</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;method&quot;</span><span class="punctuation">:</span> <span class="string">&quot;chacha20-ietf-poly1305&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;password&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;plugin&quot;</span><span class="punctuation">:</span> <span class="string">&quot;obfs-local&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;plugin_opts&quot;</span><span class="punctuation">:</span> <span class="string">&quot;obfs=tls;obfs-host=833c936905.microsoft.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tcp_fast_open&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct-out&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;block&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;block-out&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dns&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dns-out&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;route&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;rules&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dns&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dns-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;geosite&quot;</span><span class="punctuation">:</span> <span class="string">&quot;category-ads-all&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;block-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;inbound&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;proxy-in&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;jp-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;inbound&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;direct-in&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;geosite&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cn&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;geoip&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;cn&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="string">&quot;private&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;domain_suffix&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;qiangdong.xyz&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="string">&quot;cookies97.com&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;domain_keyword&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;plusls&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;inbound&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;proxy-auto-in&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;outbound&quot;</span><span class="punctuation">:</span> <span class="string">&quot;jp-out&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;auto_detect_interface&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 dns rule 中的关键字 plusls 和两个域名是为了过滤出代理的域名，让其直接走直连的 dns,从而避免产生查询回环，1088 和 1089 两个 socks 代理则对应了 <strong>强制直连</strong> 和 <strong>强制代理</strong>，运行 sing-box 后其会自动创建 tun 设备并设置 ip 和路由，十分方便。</p>
+<p>为了方便其自启动，可以添加 <code>/etc/init.d/sing-box</code> 作为服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh /etc/rc.common</span></span><br><span class="line"></span><br><span class="line">USE_PROCD=1</span><br><span class="line">START=95</span><br><span class="line">STOP=15</span><br><span class="line"></span><br><span class="line">CONFIG_PATH=<span class="string">&quot;/root/sing-box/sing-box.json&quot;</span></span><br><span class="line">SING_BOX_PATH=<span class="string">&quot;/root/sing-box/sing-box&quot;</span></span><br><span class="line">WORKING_PATH=<span class="string">&quot;/root/sing-box&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">start_service</span></span>() &#123;</span><br><span class="line">    procd_open_instance</span><br><span class="line">    procd_set_param <span class="built_in">command</span> sh -c <span class="string">&quot;<span class="variable">$SING_BOX_PATH</span> run -c <span class="variable">$CONFIG_PATH</span> -D <span class="variable">$WORKING_PATH</span>&quot;</span> </span><br><span class="line">    procd_set_param file <span class="variable">$CONFIG_PATH</span> <span class="comment"># when file change, auto run /etc/init.d/your_service reload</span></span><br><span class="line">    procd_set_param stdout 1 <span class="comment"># forward stdout to logd</span></span><br><span class="line">    procd_set_param stderr 1 <span class="comment"># same for stderr</span></span><br><span class="line">    procd_set_param pidfile /var/run/sing-box.pid</span><br><span class="line">    procd_close_instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>随后为其设置可执行权限以及开机自启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x /etc/init.d/sing-box</span><br><span class="line">service sing-box <span class="built_in">enable</span></span><br><span class="line">service sing-box restart</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>我很可爱，请给我钱</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/alipay.png" alt="plusls 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>plusls
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.plusls.com/2022/10/play-with-hp-t430/" title="折腾 HP T430 Thin Client">https://blog.plusls.com/2022/10/play-with-hp-t430/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/openwrt/" rel="tag"># openwrt</a>
+              <a href="/tags/proxy/" rel="tag"># proxy</a>
+              <a href="/tags/pve/" rel="tag"># pve</a>
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/t430/" rel="tag"># t430</a>
+              <a href="/tags/sing-box/" rel="tag"># sing-box</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/10/linux-kernel-debug/" rel="prev" title="Linux Kernel 调试环境配置">
+                  <i class="fa fa-chevron-left"></i> Linux Kernel 调试环境配置
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">plusls</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">89k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:21</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"o2OHCYF4i2z8Fu6sPsBGNnwJ-gzGzoHsz","app_key":"vVprl1Ih2X5u0SmQo6NnSmR8","server_url":"https://o2ohcyf4.lc-cn-n1-shared.com","security":false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"plusls","repo":"plusls.github.io","client_id":"be430880e81b9f6f1789","client_secret":"bc1c24724cc38b3457292eb0390cca30e24c8fba","admin_user":"plusls","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"abe66488c1b29462a2d0bc4107536a90"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/sagiri.model.json"},"mobile":{"show":false,"scale":0.5},"log":false});</script></body>
+</html>

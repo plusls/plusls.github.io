@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="rBm2uFCV50">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.plusls.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="旧博客已经很久没更新了，考研结束重新回到CS的生活后，发现自己自从博客停更后就停止了学习，和同龄人之间的差距越来越大了。为了激励自己，我决定重开博客，慢慢将旧博客的文章迁移到hexo上。 这篇文章用于记录折腾hexo的过程。 折腾完 Github Action 后的效果如下：  每次push后都会自动部署">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo 博客搭建">
+<meta property="og:url" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/">
+<meta property="og:site_name" content="plusls&#39; blog">
+<meta property="og:description" content="旧博客已经很久没更新了，考研结束重新回到CS的生活后，发现自己自从博客停更后就停止了学习，和同龄人之间的差距越来越大了。为了激励自己，我决定重开博客，慢慢将旧博客的文章迁移到hexo上。 这篇文章用于记录折腾hexo的过程。 折腾完 Github Action 后的效果如下：  每次push后都会自动部署">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/github-actions-success.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/post-url.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/category-url.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/create-oauth.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/oauth-token.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/issues-not-found.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/blog-issue.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/blog-issues-list.png">
+<meta property="og:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/github-pages.png">
+<meta property="article:published_time" content="2020-03-23T22:56:45.000Z">
+<meta property="article:modified_time" content="2020-03-24T22:20:28.000Z">
+<meta property="article:author" content="plusls">
+<meta property="article:tag" content="none">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.plusls.com/misc/use-hexo-with-github-actions/img/github-actions-success.png">
+
+
+<link rel="canonical" href="https://blog.plusls.com/misc/use-hexo-with-github-actions/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.plusls.com/misc/use-hexo-with-github-actions/","path":"misc/use-hexo-with-github-actions/","title":"Hexo 博客搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hexo 博客搭建 | plusls' blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96606331-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-96606331-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="plusls' blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">plusls' blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一条咸鱼的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-friends"><a href="/friends/" rel="section"><i class="fa fa-address-book fa-fw"></i>friends</a></li><li class="menu-item menu-item-todo-list"><a href="/todo-list/" rel="section"><i class="fa fa-calendar fa-fw"></i>todo-list</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85nodejs"><span class="nav-number">1.</span> <span class="nav-text">安装nodejs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#npm%E6%8D%A2%E6%BA%90%E4%BB%A5%E5%8F%8A%E9%85%8D%E7%BD%AEnpm%E6%A8%A1%E5%9D%97%E5%AE%89%E8%A3%85%E4%BD%8D%E7%BD%AE%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">npm换源以及配置npm模块安装位置（可选）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85hexo%E5%B9%B6%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8D%9A%E5%AE%A2"><span class="nav-number">3.</span> <span class="nav-text">安装hexo并初始化博客</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AA%E4%BA%BA%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">个人配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8Findex-html"><span class="nav-number">4.1.</span> <span class="nav-text">隐藏index.html</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">4.2.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E7%94%A8%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">4.3.</span> <span class="nav-text">启用资源文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E4%BB%A5%E5%8F%8A%E9%99%84%E4%BB%B6"><span class="nav-number">4.4.</span> <span class="nav-text">图片以及附件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%B8%B2%E6%9F%93%E9%9D%9Emarkdown%E6%96%87%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.5.</span> <span class="nav-text">解决渲染非markdown文件的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A9%E5%8D%9A%E6%96%87%E7%9A%84url%E5%8F%98%E5%BE%97%E6%9C%89%E6%84%8F%E4%B9%89"><span class="nav-number">4.6.</span> <span class="nav-text">让博文的url变得有意义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98"><span class="nav-number">4.7.</span> <span class="nav-text">更换主题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#next%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">next主题配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E7%94%A8categories"><span class="nav-number">5.1.</span> <span class="nav-text">启用categories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E8%AE%BA"><span class="nav-number">5.2.</span> <span class="nav-text">评论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E9%87%8F%E7%BB%9F%E8%AE%A1"><span class="nav-number">5.3.</span> <span class="nav-text">访问量统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#next-%E7%9A%84%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">5.4.</span> <span class="nav-text">next 的杂七杂八的配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#github-pages"><span class="nav-number">6.</span> <span class="nav-text">github pages</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git-deploy"><span class="nav-number">7.</span> <span class="nav-text">git deploy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Github-Action"><span class="nav-number">8.</span> <span class="nav-text">Github Action</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#live2d"><span class="nav-number">9.</span> <span class="nav-text">live2d</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SEO-%E5%92%8C-RSS"><span class="nav-number">10.</span> <span class="nav-text">SEO 和 RSS</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="plusls"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">plusls</p>
+  <div class="site-description" itemprop="description">咸鱼</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/plusls" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;plusls" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:plusls@qq.com" title="E-Mail → mailto:plusls@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/plusls" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.plusls.com/misc/use-hexo-with-github-actions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="plusls">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="plusls' blog">
+      <meta itemprop="description" content="咸鱼">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hexo 博客搭建 | plusls' blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hexo 博客搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-24 06:56:45" itemprop="dateCreated datePublished" datetime="2020-03-24T06:56:45+08:00">2020-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-03-25 06:20:28" itemprop="dateModified" datetime="2020-03-25T06:20:28+08:00">2020-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/misc/" itemprop="url" rel="index"><span itemprop="name">misc</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/misc/use-hexo-with-github-actions/" class="post-meta-item leancloud_visitors" data-flag-title="Hexo 博客搭建" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>旧博客已经很久没更新了，考研结束重新回到CS的生活后，发现自己自从博客停更后就停止了学习，和同龄人之间的差距越来越大了。为了激励自己，我决定重开博客，慢慢将旧博客的文章迁移到hexo上。</p>
+<p>这篇文章用于记录折腾hexo的过程。</p>
+<p>折腾完 Github Action 后的效果如下：</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/github-actions-success.png" alt="github-actions-success.png"></p>
+<p>每次push后都会自动部署</p>
+<span id="more"></span>
+
+<h2 id="安装nodejs"><a href="#安装nodejs" class="headerlink" title="安装nodejs"></a>安装nodejs</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -</span><br><span class="line">sudo apt-get install -y nodejs</span><br></pre></td></tr></table></figure>
+
+<h2 id="npm换源以及配置npm模块安装位置（可选）"><a href="#npm换源以及配置npm模块安装位置（可选）" class="headerlink" title="npm换源以及配置npm模块安装位置（可选）"></a>npm换源以及配置npm模块安装位置（可选）</h2><p>个人一直比较反感将模块安装到root权限的目录，于是更改了node模块的安装目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span><br><span class="line">npm config <span class="built_in">set</span> prefix <span class="variable">$&#123;HOME&#125;</span>/.npm_packages</span><br></pre></td></tr></table></figure>
+
+<p>配置后npm的模块会被安装到<code>$&#123;HOME&#125;/.npm_packages</code>，可执行文件会在<code>$&#123;HOME&#125;/.npm_packages/bin</code>下</p>
+<p>因此需要更新<code>PATH</code>，根据个人用的shell修改.bashrc或者.zshrc</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;<span class="variable">$HOME</span>/.npm_packages/bin:<span class="variable">$PATH</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="安装hexo并初始化博客"><a href="#安装hexo并初始化博客" class="headerlink" title="安装hexo并初始化博客"></a>安装hexo并初始化博客</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br><span class="line">hexo init blog</span><br></pre></td></tr></table></figure>
+
+<p>执行后会在当前目录下新生成一个blog目录，里面包含了生成博客所需要的数据</p>
+<p>博客的配置文件为_config.yml</p>
+<p>写完博客后可以先在本地进行预览</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<p>可以访问<code>127.0.0.1:4000</code>对博客进行预览</p>
+<h2 id="个人配置"><a href="#个人配置" class="headerlink" title="个人配置"></a>个人配置</h2><h3 id="隐藏index-html"><a href="#隐藏index-html" class="headerlink" title="隐藏index.html"></a>隐藏index.html</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span> <span class="comment"># Set to false to remove trailing &#x27;index.html&#x27; from permalinks</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span> <span class="comment"># Set to false to remove trailing &#x27;.html&#x27; from permalinks</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><p>hexo默认是把文章全都塞_posts下，为了方便整理博文，我手动为博文建立了不同的目录用于分类</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">plusls@hyperv-debian &gt; ~/github/blog/source &gt; tree</span><br><span class="line">.</span><br><span class="line">├── categories</span><br><span class="line">│   ├── index</span><br><span class="line">│   └── index.md</span><br><span class="line">├── CNAME</span><br><span class="line">├── _data</span><br><span class="line">│   └── next.yml</span><br><span class="line">└── _posts</span><br><span class="line">    ├── misc</span><br><span class="line">    │   └── use-hexo-with-github-actions.md</span><br><span class="line">    └── windows</span><br><span class="line">        └── kms</span><br><span class="line">            ├── configure-kms-server.md</span><br><span class="line">            └── use-kms-server.md</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下hexo的url是按照日期来生成的, 若是按照我这样分类博文，并修改配置文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">:title/</span></span><br></pre></td></tr></table></figure>
+
+<p>以<code>use-kms-server</code>这篇博文为例，它最后生成的url为 </p>
+<p><a href="https://blog.plusls.com/windows/kms/configure-kms-server/">https://blog.plusls.com/windows/kms/configure-kms-server/</a></p>
+<p>大大的提高了可读性，被搜索引擎索引后链接也会比较好看</p>
+<h3 id="启用资源文件夹"><a href="#启用资源文件夹" class="headerlink" title="启用资源文件夹"></a>启用资源文件夹</h3><p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/asset-folders">https://hexo.io/zh-cn/docs/asset-folders</a></p>
+<p>主要为了解决附件，图片存放的问题</p>
+<h3 id="图片以及附件"><a href="#图片以及附件" class="headerlink" title="图片以及附件"></a>图片以及附件</h3><p>在启用资源文件夹后把图片和资源扔进去，就可以在markdown内直接使用markdown语法进行引用</p>
+<p>但是存在一个问题，一般引用资源文件夹的图片时都使用的相对目录，一个图片能在博文页面正常显示，但是在主页的摘要中就会挂掉</p>
+<p>网上的搜索结果基本上都指向了<code>hexo-asset-image</code>这个插件，但是这个插件在隐藏掉<code>index.html</code>后会出现bug</p>
+<p>我fork到自己仓库后魔改了一下，好像能正常工作，未经过完整的测试</p>
+<p>可以使用如下命令安装我修改后的插件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install github:plusls/hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决渲染非markdown文件的问题"><a href="#解决渲染非markdown文件的问题" class="headerlink" title="解决渲染非markdown文件的问题"></a>解决渲染非markdown文件的问题</h3><p>hexo在开启资料文件夹后，仍然会渲染资料文件夹内的文件，目前已知会渲染<code>js, css, json</code>，github上已经有人针对这个问题提了issue</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues/1490">https://github.com/hexojs/hexo/issues/1490</a></p>
+<p>看起来官方不打算解决的样子</p>
+<p>临时的解决方案为，修改<code>_config.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">skip_render:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">_posts/**/*.js</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">_posts/**/*.css</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">_posts/**/*.json</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="让博文的url变得有意义"><a href="#让博文的url变得有意义" class="headerlink" title="让博文的url变得有意义"></a>让博文的url变得有意义</h3><p>以use-hexo-with-github-actions这篇文章为例，它的url为 <a href="https://blog.plusls.com/misc/use-hexo-with-github-actions/">https://blog.plusls.com/misc/use-hexo-with-github-actions/</a></p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/post-url.png" alt="post-url.png"></p>
+<p>我希望能让 <a href="https://blog.plusls.com/misc/">https://blog.plusls.com/misc/</a> 也变得有意义，能访问相应的category</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/category-url.png" alt="category-url.png"></p>
+<p>只需要保证博文中的category设置正确</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">categories:</span></span><br><span class="line">  <span class="bullet">-</span> [<span class="string">misc</span>]</span><br></pre></td></tr></table></figure>
+
+<p>若是博文存放在<code>source\_posts\aaaa\bbbb\cccc.md</code></p>
+<p>则博文中的category需要修改为</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">categories:</span></span><br><span class="line">  <span class="bullet">-</span> [<span class="string">aaaa</span>, <span class="string">bbbb</span>]</span><br></pre></td></tr></table></figure>
+
+<p>随后修改<code>_config.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">category_dir:</span> <span class="string">&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h3><p>默认主题真的8行，看了一圈，最后还是决定使用next: <a target="_blank" rel="noopener" href="https://github.com/theme-next/hexo-theme-next">https://github.com/theme-next/hexo-theme-next</a></p>
+<p>为了方便主题的更新以及缩小博客git仓库的体积，使用了submodule，顺便把默认主题删了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+
+<p>clone结束后把<code>_config.yml</code>的theme修改为<code>next</code>即可</p>
+<h2 id="next主题配置"><a href="#next主题配置" class="headerlink" title="next主题配置"></a>next主题配置</h2><p>为了方便主题的更新，我并没有直接修改主题目录下的配置，而是将配置文件复制到了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source/_data/next.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="启用categories"><a href="#启用categories" class="headerlink" title="启用categories"></a>启用categories</h3><p>个人感觉next的tag比较鸡肋，并未启用，只启用了categories</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories</span><br></pre></td></tr></table></figure>
+
+<p>新建categories page后修改<code>source/categories.md</code>，加上<code>type: &quot;categories&quot;</code></p>
+<p>同时修改<code>next.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">home</span></span><br><span class="line">  <span class="attr">about:</span> <span class="string">/about/</span> <span class="string">||</span> <span class="string">user</span></span><br><span class="line">  <span class="comment">#tags: /tags/ || tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">archive</span></span><br><span class="line">  <span class="comment">#schedule: /schedule/ || calendar</span></span><br><span class="line">  <span class="comment">#sitemap: /sitemap.xml || sitemap</span></span><br><span class="line">  <span class="comment">#commonweal: /404/ || heartbeat</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="评论"><a href="#评论" class="headerlink" title="评论"></a>评论</h3><p>本来打算使用 Disqus，考虑到它被墙了，又不放心国内的评论系统，最后选择了 <a target="_blank" rel="noopener" href="https://github.com/gitalk/gitalk">gitalk</a></p>
+<p>Gitalk 是基于 github 的 issue 系统做的，它要求用户评论时先用 github 登录，用户评论就相当于在我博客的 issue 区评论， Gitalk 会自动化的把评论提交到 issue 以及从 issue 区域爬取评论显示在博文下面</p>
+<p>Gitalk 使用了github 的 OAuth， 因此需要注册一个 Github application</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://github.com/settings/applications/new">https://github.com/settings/applications/new</a></p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/create-oauth.png" alt="create-oauth.png"></p>
+<p>Homepage URL 和 Authorization callback URL填写自己博客的地址，剩下的随意</p>
+<p>注册完成后会来到如下页面，把 client_id 和 client_secret 填到next主题的配置文件即可</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/oauth-token.png" alt="oauth-token.png"></p>
+<p>样例配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">gitalk:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">github_id:</span> <span class="string">plusls</span> <span class="comment"># GitHub repo owner</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">plusls.github.io</span> <span class="comment"># Repository name to store issues</span></span><br><span class="line">  <span class="attr">client_id:</span> <span class="string">xxxxxx</span> <span class="comment"># GitHub Application Client ID</span></span><br><span class="line">  <span class="attr">client_secret:</span> <span class="string">xxxxxxx</span> <span class="comment"># GitHub Application Client Secret</span></span><br><span class="line">  <span class="attr">admin_user:</span> <span class="string">plusls</span> <span class="comment"># GitHub repo owner and collaborators, only these guys can initialize gitHub issues</span></span><br><span class="line">  <span class="attr">distraction_free_mode:</span> <span class="literal">true</span> <span class="comment"># Facebook-like distraction free mode</span></span><br><span class="line">  <span class="comment"># Gitalk&#x27;s display language depends on user&#x27;s browser or system environment</span></span><br><span class="line">  <span class="comment"># If you want everyone visiting your site to see a uniform language, you can set a force language value</span></span><br><span class="line">  <span class="comment"># Available values: en | es-ES | fr | ru | zh-CN | zh-TW</span></span><br><span class="line">  <span class="attr">language:</span></span><br></pre></td></tr></table></figure>
+
+<p>配置完成后打开博文会发现，博文下方提示 issues not found.</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/issues-not-found.png" alt="issues-not-found.png"></p>
+<p>这是因为该博文的对应的 issue 还没有创建，登陆后需要亲自遍历所有博文来为每个博文创建issue</p>
+<p>创建后的 issue 类似下图</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/blog-issue.png" alt="blog-issue.png"></p>
+<p>每篇博文都会有个对应的 issue</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/blog-issues-list.png" alt="blog-issues-list.png"></p>
+<h3 id="访问量统计"><a href="#访问量统计" class="headerlink" title="访问量统计"></a>访问量统计</h3><p>本来想使用 firebase 结果发现被墙了</p>
+<p>而且 firebase 有个坑点，需要把数据库配置为公开的，根据文档进行操作：</p>
+<p><a target="_blank" rel="noopener" href="https://firebase.google.com/docs/database/security/quickstart?hl=zh-cn#sample-rules">https://firebase.google.com/docs/database/security/quickstart?hl=zh-cn#sample-rules</a></p>
+<p>规则如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rules_version = &#x27;2&#x27;;</span><br><span class="line">service cloud.firestore &#123;</span><br><span class="line">  match /databases/&#123;database&#125;/documents &#123;</span><br><span class="line">    match /&#123;document=**&#125; &#123;</span><br><span class="line">      allow read, write: if true;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>尝试用了一下 busuanzi 它的统计好像有点问题，只能在 post 页面显示，在主页显示不出，最后决定使用 leancloud_visitors</p>
+<p>教程：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/theme-next/hexo-theme-next/blob/master/docs/zh-CN/LEANCLOUD-COUNTER-SECURITY.md">https://github.com/theme-next/hexo-theme-next/blob/master/docs/zh-CN/LEANCLOUD-COUNTER-SECURITY.md</a></p>
+<h3 id="next-的杂七杂八的配置"><a href="#next-的杂七杂八的配置" class="headerlink" title="next 的杂七杂八的配置"></a>next 的杂七杂八的配置</h3><p>仅作记录，具体怎么配置可查阅文档：<a target="_blank" rel="noopener" href="https://theme-next.iissnan.com/theme-settings.html">https://theme-next.iissnan.com/theme-settings.html</a></p>
+<ul>
+<li>谷歌分析</li>
+<li>头像以及头像旋转</li>
+<li>社交信息，比如 Github，Email</li>
+<li>字数统计</li>
+<li>代码块配置</li>
+<li>github banner</li>
+<li>favicon</li>
+<li>友链没使用next自带的，自己新建了一个页面</li>
+<li>捐赠</li>
+<li>menu badges</li>
+<li>SEO</li>
+<li>license</li>
+</ul>
+<h2 id="github-pages"><a href="#github-pages" class="headerlink" title="github pages"></a>github pages</h2><p>在新建一个仓库，名字为<code>plusls.github.io</code></p>
+<p>修改仓库设置如下</p>
+<p><img data-src="/misc/use-hexo-with-github-actions/img/github-pages.png" alt="github-pages.png"></p>
+<p>随后将<code>blog.plusls.com</code> CNAME 到 <code>plusls.github.io</code>，即可使用<code>blog.plusls.com</code>访问github pages（白嫖大成功）</p>
+<h2 id="git-deploy"><a href="#git-deploy" class="headerlink" title="git deploy"></a>git deploy</h2><p>自动部署博客到github pages，安装插件<code>hexo-deployer-git</code></p>
+<p>修改配置<code>_config.yml</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/deployment.html</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:plusls/plusls.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<p>配置好后命令行输入hexo deploy会自动部署博客到github pages</p>
+<p>由于该插件每次都会初始化一个新的git仓库并push到远端，这个操作会覆盖掉仓库原有的CNAME文件。可以提前在source目录下放置CNAME，hexo会自动将其拷贝到网站的根目录下。</p>
+<h2 id="Github-Action"><a href="#Github-Action" class="headerlink" title="Github Action"></a>Github Action</h2><p>终于到正题了，我这人有点懒，并不想写完博客后还要手动去执行hexo deploy，考虑使用Github Action，让我在写完博文push后自动部署</p>
+<p>新建文件<code>.github/workflows/deploy.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span> [<span class="string">push</span>]</span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">strategy:</span></span><br><span class="line">      <span class="attr">matrix:</span></span><br><span class="line">        <span class="attr">node-version:</span> [<span class="number">10.</span><span class="string">x</span>]</span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Pull</span> <span class="string">code</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">submodules:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Node.js</span> <span class="string">$&#123;&#123;</span> <span class="string">matrix.node-version</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v1</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="string">$&#123;&#123;</span> <span class="string">matrix.node-version</span> <span class="string">&#125;&#125;</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          export TZ=&#x27;Asia/Shanghai&#x27;</span></span><br><span class="line"><span class="string">          npm i -g hexo-cli</span></span><br><span class="line"><span class="string">          npm i</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">plugin</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">          npm install github:plusls/hexo-asset-image --save</span></span><br><span class="line"><span class="string">          echo install success</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">git</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">ACTION_DEPLOY_KEY:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_ACTION</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          mkdir -p ~/.ssh/</span></span><br><span class="line"><span class="string">          echo &quot;$ACTION_DEPLOY_KEY&quot; &gt; ~/.ssh/id_rsa</span></span><br><span class="line"><span class="string">          chmod 600 ~/.ssh/id_rsa</span></span><br><span class="line"><span class="string">          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts</span></span><br><span class="line"><span class="string">          git config --global user.name &quot;plusls&quot;</span></span><br><span class="line"><span class="string">          git config --global user.email &quot;pluslslsulp@gmail.com&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          hexo clean</span></span><br><span class="line"><span class="string">          hexo g</span></span><br><span class="line"><span class="string">          hexo deploy</span></span><br><span class="line"><span class="string">          rm ~/.ssh/id_rsa</span></span><br></pre></td></tr></table></figure>
+
+<p>Github Action的教程网上也有，但是没几个教程有说明怎么让git免密码push</p>
+<p>首先ssh-keygen生成私钥和公钥，随后将公钥放到<code>plusls.github.io</code>的<code>settings\Deploy Keys</code>，名字随便起一个就好了</p>
+<p>私钥则要放在博客的github仓库的<code>settings\secrets</code>，名字必须为<code>GITHUB_ACTION</code>，因为上面的脚本是通过<code>secrets.GITHUB_ACTION</code>来获取私钥并写入<code> ~/.ssh/id_rsa</code>的</p>
+<h2 id="live2d"><a href="#live2d" class="headerlink" title="live2d"></a>live2d</h2><p>老婆！</p>
+<p>在 hexo 使用 live2d 看板娘十分方便，安装 hexo-helper-live2d 插件即可</p>
+<p>作者自带的模型中并没有 Sagiri，去网上随便找了个扔在 <code>/live2d_models</code>，跟着文档改改配置就能用了</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Live2D</span></span><br><span class="line"><span class="comment">## https://github.com/EYHN/hexo-helper-live2d</span></span><br><span class="line"><span class="attr">live2d:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># enable: false</span></span><br><span class="line">  <span class="attr">scriptFrom:</span> <span class="string">local</span> <span class="comment"># 默认</span></span><br><span class="line">  <span class="attr">pluginRootPath:</span> <span class="string">live2dw/</span> <span class="comment"># 插件在站点上的根目录(相对路径)</span></span><br><span class="line">  <span class="attr">pluginJsPath:</span> <span class="string">lib/</span> <span class="comment"># 脚本文件相对与插件根目录路径</span></span><br><span class="line">  <span class="attr">pluginModelPath:</span> <span class="string">assets/</span> <span class="comment"># 模型文件相对与插件根目录路径</span></span><br><span class="line">  <span class="comment"># scriptFrom: jsdelivr # jsdelivr CDN</span></span><br><span class="line">  <span class="comment"># scriptFrom: unpkg # unpkg CDN</span></span><br><span class="line">  <span class="comment"># scriptFrom: https://cdn.jsdelivr.net/npm/live2d-widget@3.x/lib/L2Dwidget.min.js # 你的自定义 url</span></span><br><span class="line">  <span class="attr">tagMode:</span> <span class="literal">false</span> <span class="comment"># 标签模式, 是否仅替换 live2d tag标签而非插入到所有页面中</span></span><br><span class="line">  <span class="attr">debug:</span> <span class="literal">false</span> <span class="comment"># 调试, 是否在控制台输出日志</span></span><br><span class="line">  <span class="attr">model:</span></span><br><span class="line">    <span class="comment"># use: live2d-widget-model-wanko # npm-module package name</span></span><br><span class="line">    <span class="attr">use:</span> <span class="string">sagiri</span> <span class="comment"># 博客根目录/live2d_models/ 下的目录名</span></span><br><span class="line">    <span class="comment"># use: ./wives/wanko # 相对于博客根目录的路径</span></span><br><span class="line">    <span class="comment"># use: https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json # 你的自定义 url</span></span><br><span class="line">  <span class="comment">#   scale: 1</span></span><br><span class="line">  <span class="comment">#   hHeadPos: 0.5</span></span><br><span class="line">  <span class="comment">#   vHeadPos: 0.618</span></span><br><span class="line">  <span class="comment"># display:</span></span><br><span class="line">  <span class="comment">#   superSample: 2</span></span><br><span class="line">  <span class="comment">#   width: 150</span></span><br><span class="line">  <span class="comment">#   height: 300</span></span><br><span class="line">  <span class="comment">#   position: right</span></span><br><span class="line">  <span class="comment">#   hOffset: 0</span></span><br><span class="line">  <span class="comment">#   vOffset: -20</span></span><br><span class="line">  <span class="attr">mobile:</span></span><br><span class="line">    <span class="attr">show:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">scale:</span> <span class="number">0.5</span></span><br><span class="line">  <span class="comment"># react:</span></span><br><span class="line">  <span class="comment">#   opacityDefault: 0.7</span></span><br><span class="line">  <span class="comment">#   opacityOnHover: 0.2</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SEO-和-RSS"><a href="#SEO-和-RSS" class="headerlink" title="SEO 和 RSS"></a>SEO 和 RSS</h2><p>SEO 我也不太搞得明白，只是生成了站点地图并且提交给了百度和谷歌</p>
+<p>next 主题也提供了一些 SEO 的开关，像 baidu push 之类的，弄完后百度和谷歌会自动爬取页面，有新页面时站点地图也会自动更新。不干了，睡大觉！</p>
+<p>RSS 和站点地图都可以用安装插件来完成。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install --save hexo-generator-baidu-sitemap</span><br><span class="line">npm install --save hexo-generator-sitemap </span><br><span class="line">npm install --save hexo-generator-feed</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>我很可爱，请给我钱</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/alipay.png" alt="plusls 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>plusls
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.plusls.com/misc/use-hexo-with-github-actions/" title="Hexo 博客搭建">https://blog.plusls.com/misc/use-hexo-with-github-actions/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/windows/vscode-using-python-in-wsl/" rel="prev" title="Windows的vscode使用wsl中的python">
+                  <i class="fa fa-chevron-left"></i> Windows的vscode使用wsl中的python
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/linux/nginx/compile-nginx-dynamic-modules/" rel="next" title="Nginx 编译第三方动态模块">
+                  Nginx 编译第三方动态模块 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">plusls</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">89k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:21</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"o2OHCYF4i2z8Fu6sPsBGNnwJ-gzGzoHsz","app_key":"vVprl1Ih2X5u0SmQo6NnSmR8","server_url":"https://o2ohcyf4.lc-cn-n1-shared.com","security":false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"plusls","repo":"plusls.github.io","client_id":"be430880e81b9f6f1789","client_secret":"bc1c24724cc38b3457292eb0390cca30e24c8fba","admin_user":"plusls","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"abe322094c470a16452a55f9bf2bdb80"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/sagiri.model.json"},"mobile":{"show":false,"scale":0.5},"log":false});</script></body>
+</html>

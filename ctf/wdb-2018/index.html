@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="rBm2uFCV50">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.plusls.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="说明此writeup包含4场网鼎杯大部分bin题，exp和二进制文件见附录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[WDB-2018] 网鼎杯Bin题部分writeup">
+<meta property="og:url" content="https://blog.plusls.com/ctf/wdb-2018/">
+<meta property="og:site_name" content="plusls&#39; blog">
+<meta property="og:description" content="说明此writeup包含4场网鼎杯大部分bin题，exp和二进制文件见附录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/guess1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/blind1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/blind2.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/babyheap1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/heylow1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/fmt1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/fgo1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/hvm1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-2018/img/memffle1.png">
+<meta property="article:published_time" content="2018-08-31T12:23:43.000Z">
+<meta property="article:modified_time" content="2018-08-31T12:23:48.000Z">
+<meta property="article:author" content="plusls">
+<meta property="article:tag" content="none">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.plusls.com/ctf/wdb-2018/img/guess1.png">
+
+
+<link rel="canonical" href="https://blog.plusls.com/ctf/wdb-2018/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.plusls.com/ctf/wdb-2018/","path":"ctf/wdb-2018/","title":"[WDB-2018] 网鼎杯Bin题部分writeup"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[WDB-2018] 网鼎杯Bin题部分writeup | plusls' blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96606331-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-96606331-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="plusls' blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">plusls' blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一条咸鱼的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-friends"><a href="/friends/" rel="section"><i class="fa fa-address-book fa-fw"></i>friends</a></li><li class="menu-item menu-item-todo-list"><a href="/todo-list/" rel="section"><i class="fa fa-calendar fa-fw"></i>todo-list</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%AC%A1"><span class="nav-number">2.</span> <span class="nav-text">场次</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#day1"><span class="nav-number">2.1.</span> <span class="nav-text">day1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RE"><span class="nav-number">2.1.1.</span> <span class="nav-text">RE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PWN"><span class="nav-number">2.1.2.</span> <span class="nav-text">PWN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#day2"><span class="nav-number">2.2.</span> <span class="nav-text">day2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RE-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">RE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PWN-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">PWN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#day3"><span class="nav-number">2.3.</span> <span class="nav-text">day3</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RE-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">RE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PWN-2"><span class="nav-number">2.3.2.</span> <span class="nav-text">PWN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#day4"><span class="nav-number">2.4.</span> <span class="nav-text">day4</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RE-3"><span class="nav-number">2.4.1.</span> <span class="nav-text">RE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PWN-3"><span class="nav-number">2.4.2.</span> <span class="nav-text">PWN</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RE-4"><span class="nav-number">3.</span> <span class="nav-text">RE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#beijing"><span class="nav-number">3.1.</span> <span class="nav-text">beijing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#advanced"><span class="nav-number">3.2.</span> <span class="nav-text">advanced</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blend"><span class="nav-number">3.3.</span> <span class="nav-text">blend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#give-a-try"><span class="nav-number">3.4.</span> <span class="nav-text">give_a_try</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#game"><span class="nav-number">3.5.</span> <span class="nav-text">game</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#martricks"><span class="nav-number">3.6.</span> <span class="nav-text">martricks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rua"><span class="nav-number">3.7.</span> <span class="nav-text">rua</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PWN-4"><span class="nav-number">4.</span> <span class="nav-text">PWN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#guess"><span class="nav-number">4.1.</span> <span class="nav-text">guess</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blind"><span class="nav-number">4.2.</span> <span class="nav-text">blind</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#babyheap"><span class="nav-number">4.3.</span> <span class="nav-text">babyheap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#heylow-amp-heylow2"><span class="nav-number">4.4.</span> <span class="nav-text">heylow &amp; heylow2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hangman"><span class="nav-number">4.5.</span> <span class="nav-text">hangman</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#easycoin"><span class="nav-number">4.6.</span> <span class="nav-text">easycoin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fmt"><span class="nav-number">4.7.</span> <span class="nav-text">fmt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fgo"><span class="nav-number">4.8.</span> <span class="nav-text">fgo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hvm"><span class="nav-number">4.9.</span> <span class="nav-text">hvm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memffle"><span class="nav-number">4.10.</span> <span class="nav-text">memffle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#note"><span class="nav-number">4.11.</span> <span class="nav-text">note</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#note2"><span class="nav-number">4.12.</span> <span class="nav-text">note2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#soEasy"><span class="nav-number">4.13.</span> <span class="nav-text">soEasy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pesp"><span class="nav-number">4.14.</span> <span class="nav-text">pesp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">5.</span> <span class="nav-text">附录</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="plusls"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">plusls</p>
+  <div class="site-description" itemprop="description">咸鱼</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/plusls" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;plusls" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:plusls@qq.com" title="E-Mail → mailto:plusls@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/plusls" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.plusls.com/ctf/wdb-2018/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="plusls">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="plusls' blog">
+      <meta itemprop="description" content="咸鱼">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[WDB-2018] 网鼎杯Bin题部分writeup | plusls' blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [WDB-2018] 网鼎杯Bin题部分writeup
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-08-31 20:23:43 / 修改时间：20:23:48" itemprop="dateCreated datePublished" datetime="2018-08-31T20:23:43+08:00">2018-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/writeup/" itemprop="url" rel="index"><span itemprop="name">writeup</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/ctf/wdb-2018/" class="post-meta-item leancloud_visitors" data-flag-title="[WDB-2018] 网鼎杯Bin题部分writeup" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>此writeup包含4场网鼎杯大部分bin题，exp和二进制文件见附录</p>
+<span id="more"></span>
+
+<h2 id="场次"><a href="#场次" class="headerlink" title="场次"></a>场次</h2><h3 id="day1"><a href="#day1" class="headerlink" title="day1"></a>day1</h3><h4 id="RE"><a href="#RE" class="headerlink" title="RE"></a>RE</h4><p>beijing, advanced, blend</p>
+<h4 id="PWN"><a href="#PWN" class="headerlink" title="PWN"></a>PWN</h4><p>guess, blind, babyheap, heylow, heylow2, hangman, easycoin</p>
+<h3 id="day2"><a href="#day2" class="headerlink" title="day2"></a>day2</h3><h4 id="RE-1"><a href="#RE-1" class="headerlink" title="RE"></a>RE</h4><p>give_a_try, game, martricks, rua</p>
+<h4 id="PWN-1"><a href="#PWN-1" class="headerlink" title="PWN"></a>PWN</h4><p>fmt, fgo, hvm, memffle</p>
+<h3 id="day3"><a href="#day3" class="headerlink" title="day3"></a>day3</h3><h4 id="RE-2"><a href="#RE-2" class="headerlink" title="RE"></a>RE</h4><p>最好的语言, SimpleSMC, babyre, i_like_pack</p>
+<p>暂无i_like_back的二进制文件</p>
+<h4 id="PWN-2"><a href="#PWN-2" class="headerlink" title="PWN"></a>PWN</h4><p>note, note2, soEasy, pesp</p>
+<h3 id="day4"><a href="#day4" class="headerlink" title="day4"></a>day4</h3><h4 id="RE-3"><a href="#RE-3" class="headerlink" title="RE"></a>RE</h4><p>chaoyang, compenc, dalao</p>
+<h4 id="PWN-3"><a href="#PWN-3" class="headerlink" title="PWN"></a>PWN</h4><p>impossible, ipowtn, ipowtn2</p>
+<h2 id="RE-4"><a href="#RE-4" class="headerlink" title="RE"></a>RE</h2><h3 id="beijing"><a href="#beijing" class="headerlink" title="beijing"></a>beijing</h3><p>脑洞题</p>
+<p>把bytedump出来拿到<br>s &#x3D; ‘aLgYi)nBb\reqf4j\xc6m\x8al\x7f{\xaez\x92}\xec_W’<br>通过函数调用顺序得到下列序号<br>a&#x3D;[6, 9, 0, 1, 0xa, 0, 8, 0, 0xb, 2, 3, 1, 0xd, 4, 5, 2, 7, 2, 3, 1, 0xc]<br>s.find(‘f’), l, a, g得到[12, 18, 0, 2]<br>猜测flag为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">&#x27;aLgYi)nBb\reqf4j\xc6m\x8al\x7f&#123;\xaez\x92&#125;\xec_W&#x27;</span></span><br><span class="line">a=[<span class="number">6</span>, <span class="number">9</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0xa</span>, <span class="number">0</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">0xb</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">0xd</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">0xc</span>]</span><br><span class="line">ret = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> a:</span><br><span class="line">    ret += s[i*<span class="number">2</span>]</span><br><span class="line"><span class="built_in">print</span>(ret)</span><br></pre></td></tr></table></figure>
+<h3 id="advanced"><a href="#advanced" class="headerlink" title="advanced"></a>advanced</h3><h3 id="blend"><a href="#blend" class="headerlink" title="blend"></a>blend</h3><h3 id="give-a-try"><a href="#give-a-try" class="headerlink" title="give_a_try"></a>give_a_try</h3><h3 id="game"><a href="#game" class="headerlink" title="game"></a>game</h3><h3 id="martricks"><a href="#martricks" class="headerlink" title="martricks"></a>martricks</h3><h3 id="rua"><a href="#rua" class="headerlink" title="rua"></a>rua</h3><h2 id="PWN-4"><a href="#PWN-4" class="headerlink" title="PWN"></a>PWN</h2><h3 id="guess"><a href="#guess" class="headerlink" title="guess"></a>guess</h3><p>程序存在栈溢出，同时fork了3次，也就是nc一次可以猜测3次flag，这3次程序的地址都不会发生变化</p>
+<p>考虑通过<strong>stack smashing detected</strong> leak数据</p>
+<p>第一次覆盖argv为got表地址，leak出libc的地址，计算出environ的位置</p>
+<p>第二次覆盖其为environ的地址，leak出栈的地址，计算出flag的位置</p>
+<p>第三次直接覆盖为flag的位置，计算出flag的值</p>
+<p><img data-src="/ctf/wdb-2018/img/guess1.png" alt="guess1"></p>
+<h3 id="blind"><a href="#blind" class="headerlink" title="blind"></a>blind</h3><p>blind是一个堆题，只允许malloc(0x68)的chunk，存在UAF，但是没有leak函数</p>
+<p>考虑通过fastbin attack申请到bss段的内存，从而在bss段上伪造stdout的结构体以及其虚表，让他指向system(“&#x2F;bin&#x2F;sh”)，从而getshell</p>
+<p>伪造的stdout如图</p>
+<p><img data-src="/ctf/wdb-2018/img/blind1.png" alt="blind1"></p>
+<p>伪造的虚表如图</p>
+<p><img data-src="/ctf/wdb-2018/img/blind2.png" alt="blind"></p>
+<h3 id="babyheap"><a href="#babyheap" class="headerlink" title="babyheap"></a>babyheap</h3><p>UAF，只允许malloc(0x20)的chunk</p>
+<p>在leak出堆的地址后，用fastbin attack修改现有chunk信息，可根据下图构造出unlink的条件</p>
+<p><img data-src="/ctf/wdb-2018/img/babyheap1.png" alt="babyheap1"></p>
+<p>触发unlink后可以去除edit的次数限制，以及任意地址写，很容易leak出libc的基址，最后修改__malloc_hook为one_gadget即可</p>
+<h3 id="heylow-amp-heylow2"><a href="#heylow-amp-heylow2" class="headerlink" title="heylow &amp; heylow2"></a>heylow &amp; heylow2</h3><p>程序比较大，但是有一个格式化字符串的漏洞，当输入出错时会触发报错，这时候会触发格式化字符串漏洞</p>
+<p><img data-src="/ctf/wdb-2018/img/heylow1.png" alt="heylow1.png"></p>
+<p>直接修改__free_hook为one_gadget然后使字符串很长触发malloc和free即可</p>
+<p>heylow与heylow2的区别在于heylow2只允许printf小于0x4f的字符串，然而payload只要51 byte</p>
+<p>所以一个payload可以打2个题</p>
+<h3 id="hangman"><a href="#hangman" class="headerlink" title="hangman"></a>hangman</h3><p>暂空</p>
+<h3 id="easycoin"><a href="#easycoin" class="headerlink" title="easycoin"></a>easycoin</h3><p>暂空</p>
+<h3 id="fmt"><a href="#fmt" class="headerlink" title="fmt"></a>fmt</h3><p>本题存在格式化字符串漏洞</p>
+<p><img data-src="/ctf/wdb-2018/img/fmt1.png" alt="fmt1"></p>
+<p>修改got表为system然后printf&#x2F;bin&#x2F;sh即可getshell</p>
+<h3 id="fgo"><a href="#fgo" class="headerlink" title="fgo"></a>fgo</h3><p>堆题，存在UAF</p>
+<p><img data-src="/ctf/wdb-2018/img/fgo1.png" alt="fgo1"></p>
+<p>可以看到在free后指针并没有清空</p>
+<p>覆盖函数指针为printf后leak出libc地址</p>
+<p>随后覆盖为system地址即可getshell</p>
+<h3 id="hvm"><a href="#hvm" class="headerlink" title="hvm"></a>hvm</h3><p>这题是个虚拟机，逆向opcode结果为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">rax x1</span><br><span class="line">rbx x2</span><br><span class="line">rcx x3</span><br><span class="line">rdx x4</span><br><span class="line">rsi x5</span><br><span class="line">rdi x6</span><br><span class="line"></span><br><span class="line">07 00 00 00 </span><br><span class="line">6F 0A 00 00 push 0xa6f</span><br><span class="line"></span><br><span class="line">07 00 00 00 </span><br><span class="line">68 65 6C 6C push 0x6c6c6568 // push hello</span><br><span class="line"></span><br><span class="line">0C 00 00 00 mov x5, stackptr // hello</span><br><span class="line"></span><br><span class="line">18 00 00 00 </span><br><span class="line">00 00 00 01 mov x6, 0x1</span><br><span class="line"></span><br><span class="line">04 00 00 00</span><br><span class="line">00 00 00 06 mov x4, 0x6</span><br><span class="line"></span><br><span class="line">01 00 00 00</span><br><span class="line">00 00 00 01 mov x1, 0x1</span><br><span class="line"></span><br><span class="line">0E 00 00 00 syscall</span><br><span class="line"></span><br><span class="line">14 00 00 00 push pcoffset</span><br><span class="line"></span><br><span class="line">05 00 00 00</span><br><span class="line">00 00 00 0E jmp next 0xe // jmp tag</span><br><span class="line"></span><br><span class="line">07 00 00 00 </span><br><span class="line">00 00 00 00 push 0</span><br><span class="line"></span><br><span class="line">07 00 00 00</span><br><span class="line">62 79 65 0A push 0xa657962 //bye\n</span><br><span class="line"></span><br><span class="line">0C 00 00 00 mov x5, stackptr</span><br><span class="line"></span><br><span class="line">18 00 00 00 </span><br><span class="line">00 00 00 01 mov x6, 0x1</span><br><span class="line"></span><br><span class="line">04 00 00 00 </span><br><span class="line">00 00 00 06 mov x4, 0x6</span><br><span class="line"></span><br><span class="line">01 00 00 00 </span><br><span class="line">00 00 00 01 mov x1, 0x1</span><br><span class="line"></span><br><span class="line">0E 00 00 00 syscall</span><br><span class="line"></span><br><span class="line">19 00 00 00 exit(0)</span><br><span class="line"></span><br><span class="line">10 00 00 00 push stackbase // tag</span><br><span class="line"></span><br><span class="line">11 00 00 00 mov stackbase, stackptr</span><br><span class="line"></span><br><span class="line">0F 00 00 00 </span><br><span class="line">00 00 00 30 sub stackptr, 0x30</span><br><span class="line"></span><br><span class="line">0C 00 00 00 mov x5, stackptr</span><br><span class="line"></span><br><span class="line">18 00 00 00</span><br><span class="line">00 00 00 00 mov x6, 0x0</span><br><span class="line"></span><br><span class="line">04 00 00 00</span><br><span class="line">00 00 00 F0 mov x4, 0xf0</span><br><span class="line"></span><br><span class="line">01 00 00 00</span><br><span class="line">00 00 00 00 mov x1, 0</span><br><span class="line"></span><br><span class="line">0E 00 00 00 syscall</span><br><span class="line"></span><br><span class="line">12 00 00 00 mov stackptr, stackbase</span><br><span class="line"></span><br><span class="line">13 00 00 00 pop stackbase</span><br><span class="line"></span><br><span class="line">06 00 00 00 jmp [stackptr]+3; pop //ret</span><br></pre></td></tr></table></figure>
+
+<p>发现其虚拟栈上存在栈溢出</p>
+<p>看源码发现虚拟代码段和虚拟栈都是mmap出来的</p>
+<p><img data-src="/ctf/wdb-2018/img/hvm1.png" alt="hvm1.png"></p>
+<p>gdb调试发现buf_addr &#x3D; stack_addr + 0x2000</p>
+<p>考虑栈溢出将返回地址指向虚拟栈上，自己写入opcode后执行execve(‘&#x2F;bin&#x2F;sh’, NULL, NULL)</p>
+<h3 id="memffle"><a href="#memffle" class="headerlink" title="memffle"></a>memffle</h3><p>题目要求输入组数据，并对其进行随机排序，可以输入无数个数据导致栈溢出</p>
+<p>其中随机数生成使用了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">srand(time(<span class="number">0</span>));</span><br></pre></td></tr></table></figure>
+
+<p>若是在连接的同时本地也以当前时间作为种子，若是时间是同步的话，本地也可以生成和远程相同的随机队列。</p>
+<p>逆向后可以得到生成随机序列的算法为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">srand</span>():</span><br><span class="line">    libc[<span class="string">&#x27;srand&#x27;</span>](libc[<span class="string">&#x27;time&#x27;</span>](<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rand</span>():    </span><br><span class="line">    <span class="keyword">return</span> libc[<span class="string">&#x27;rand&#x27;</span>]()</span><br><span class="line"><span class="comment"># 生成乱序序列</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shuffling</span>(<span class="params">n</span>):</span><br><span class="line">    srand()</span><br><span class="line">    ret = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(n):</span><br><span class="line">        ret.append(i)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(n):</span><br><span class="line">        j = n - i - <span class="number">1</span></span><br><span class="line">        v = rand() % (j + <span class="number">1</span>)</span><br><span class="line">        ret[j],  ret[v] = ret[v], ret[j]</span><br><span class="line">    <span class="keyword">return</span> ret  </span><br></pre></td></tr></table></figure>
+
+<p>查看read函数发现其末尾没有置零，同时还存在1byte的溢出</p>
+<p><img data-src="/ctf/wdb-2018/img/memffle1.png" alt="memffle1.png"></p>
+<p>可以在输入名字时把buff填满从而leak出canary</p>
+<p>发现题目送了1byte的system的地址</p>
+<p>通常system地址为0xf7abcdef 其中def固定，给出了bc，可以爆破出剩下的半byte的地址</p>
+<p>直接rop即可</p>
+<h3 id="note"><a href="#note" class="headerlink" title="note"></a>note</h3><h3 id="note2"><a href="#note2" class="headerlink" title="note2"></a>note2</h3><h3 id="soEasy"><a href="#soEasy" class="headerlink" title="soEasy"></a>soEasy</h3><h3 id="pesp"><a href="#pesp" class="headerlink" title="pesp"></a>pesp</h3><h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>暂空</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>我很可爱，请给我钱</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/alipay.png" alt="plusls 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>plusls
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.plusls.com/ctf/wdb-2018/" title="[WDB-2018] 网鼎杯Bin题部分writeup">https://blog.plusls.com/ctf/wdb-2018/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/windows/configure-shell-on-windows/" rel="prev" title="Windows下配置shell">
+                  <i class="fa fa-chevron-left"></i> Windows下配置shell
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/ctf/wdb-offline-2018/" rel="next" title="[WDB-offline-2018] 网鼎杯-2018线下记录">
+                  [WDB-offline-2018] 网鼎杯-2018线下记录 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">plusls</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">89k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:21</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"o2OHCYF4i2z8Fu6sPsBGNnwJ-gzGzoHsz","app_key":"vVprl1Ih2X5u0SmQo6NnSmR8","server_url":"https://o2ohcyf4.lc-cn-n1-shared.com","security":false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"plusls","repo":"plusls.github.io","client_id":"be430880e81b9f6f1789","client_secret":"bc1c24724cc38b3457292eb0390cca30e24c8fba","admin_user":"plusls","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"06f2095bfea87aad5e6bc8649183997c"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/sagiri.model.json"},"mobile":{"show":false,"scale":0.5},"log":false});</script></body>
+</html>

